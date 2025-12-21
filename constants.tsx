@@ -130,15 +130,81 @@ export const PROCESS_STEPS: ProcessStep[] = [
 
 export const TESTIMONIALS: Testimonial[] = [
   {
-    quote: "Es ist selten, Dienstleister zu finden, die so mitdenken. Herr Rott agiert nicht als externer Arbeiter, sondern als Partner für unsere Liegenschaft.",
-    author: "Michael Huber",
-    role: "Immobilieninvestor",
-    company: "Rosenheim"
+    author: "Kunde aus Landshut",
+    role: "23. Nov 2025",
+    service: "Pflegen und Entfernen von Rasen, Hecken und Sträuchern",
+    quote: "Alles super, freundlich, zuverlässig und saubere Arbeit. Gerne bis zum nächsten Bedarf, der sicher kommen wird."
   },
   {
-    quote: "Die digitale Kommunikation und die absolute Verlässlichkeit haben uns überzeugt. Eine deutliche Aufwertung gegenüber klassischen Diensten.",
-    author: "Dr. Sabine K.",
-    role: "Eigentümergemeinschaft",
-    company: "Traunstein"
+    author: "Kunde aus Hörgertshausen",
+    role: "15. Nov 2025",
+    service: "Bäume zurückschneiden, Heckenschnitt, Rasen mähen",
+    quote: "Hat pünktlich und einwandfrei gearbeitet. Hatte sogar zwei Bäume zur Pflege, die ausgelichtet wurden und einwandfrei aussahen."
+  },
+  {
+    author: "Kunde aus Fahrenzhausen",
+    role: "31. Okt 2025",
+    service: "Heckenschnitt, Rasen mähen, Hecke entfernen (250 m²)",
+    quote: "Unkomplizierter Austausch, schnelle Umsetzung, fairer Preis. Tolles Ergebnis."
+  },
+  {
+    author: "Cedric, Lengdorf",
+    role: "26. Okt 2025",
+    service: "Bäume zurückschneiden, Heckenschnitt (500 m²)",
+    quote: "5 Sterne Bewertung (Kein Text hinterlegt)"
+  },
+  {
+    author: "Rott Helmut, Gammelsdorf",
+    role: "8. Okt 2025",
+    service: "Bäume zurückschneiden (1000 m²)",
+    quote: "Auftrag muss noch ausgeführt werden. // Antwort des Handwerkers: Danke für Ihre Rückmeldung! Der Auftrag steht noch aus. Sobald die Arbeiten abgeschlossen sind, hoffe ich, dass Sie mit dem Ergebnis genauso zufrieden sein werden."
+  },
+  {
+    author: "Helga Baumgartner, Moosburg",
+    role: "30. Sep 2025",
+    service: "Abbau eines alten Hochbeets und Erstellen eines neuen",
+    quote: "Super schnelle und kompetente Ausführung des Auftrags. Sehr zu empfehlen!"
+  },
+  {
+    author: "Kunde aus Petershausen",
+    role: "26. Sep 2025",
+    service: "Heckenschnitt (25 Meter)",
+    quote: "Wir haben die Firma Rott mit dem Schneiden unserer 25 Meter langen Hecke beauftragt. Die Arbeiten wurden schnell und zuverlässig erledigt. Der Preis war ebenfalls sehr fair. Man findet selten noch solche Handwerker! Klare Empfehlung."
+  },
+  {
+    author: "Harald, Pfaffenhofen",
+    role: "20. Sep 2025",
+    service: "Heckenschnitt, Pflanzen behandeln (100 m²)",
+    quote: "2 junge sympathische Männer. Alles zur vollsten Zufriedenheit erledigt. Hecke und Sträucher sehr sauber zugeschnitten. Sogar komplett entfernt. Immer wieder gerne. Preislich ok."
+  },
+  {
+    author: "Mercedes Schulz, Pfaffenhofen",
+    role: "16. Sep 2025",
+    service: "Rasen mähen (300 m²)",
+    quote: "5 Sterne Bewertung (Kein Text hinterlegt)"
+  },
+  {
+    author: "Kunde aus Finsing",
+    role: "15. Sep 2025",
+    service: "Pflegen und Entfernen von Rasen, Hecken und Sträuchern",
+    quote: "Schnelle, professionelle Abwicklung, saubere Arbeit. Empfehlung von mir."
+  },
+  {
+    author: "Simone, Freising",
+    role: "9. Sep 2025",
+    service: "Pflegen und Entfernen von Rasen, Hecken und Sträuchern",
+    quote: "Alles perfekt!"
+  },
+  {
+    author: "Hattenhauer Gabriele, Moosburg",
+    role: "11. Aug 2025",
+    service: "Pflegen und Entfernen von Rasen, Hecken und Sträuchern",
+    quote: "Der junge, sympathische Mann kam gleich am nächsten Tag und hat seine Aufgaben schnell und zuverlässig erledigt. Wir werden ihn auf jeden Fall wieder engagieren! Dankeschön!"
+  },
+  {
+    author: "Michael, Altdorf",
+    role: "5. Aug 2025",
+    service: "Bäume zurückschneiden, Wurzeln entfernen (100 m²)",
+    quote: "Sehr gute Kommunikation, pünktlich, sehr gute Arbeit und Abwicklung des Auftrages. Sehr empfehlenswert! Danke für die schnelle Erledigung!"
   }
 ];

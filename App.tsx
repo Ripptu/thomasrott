@@ -2,9 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import { 
   Menu, X, Check, ArrowRight, ArrowLeft, Phone, Hammer, Clipboard, Star, Quote, ArrowUpRight, MapPin, CircleDashed, Camera
 } from 'lucide-react';
-import { NAV_LINKS, HERO_HEADLINE, HERO_SUBTEXT, SERVICE_PACKAGES, PROCESS_STEPS, LOCATION_CITIES, GALLERY_IMAGES } from './constants.tsx';
+import { motion } from 'framer-motion';
+import { NAV_LINKS, HERO_HEADLINE, HERO_SUBTEXT, SERVICE_PACKAGES, PROCESS_STEPS, LOCATION_CITIES, GALLERY_IMAGES, TESTIMONIALS } from './constants.tsx';
 import { Button } from './components/Button.tsx';
-import { Testimonials } from './components/ui/unique-testimonial.tsx';
+import { TestimonialsColumn } from './components/ui/testimonials-columns.tsx';
 import { InstagramIcon, FacebookIcon, WhatsAppIcon } from './components/SocialIcons.tsx';
 import { LegalView } from './components/LegalView.tsx';
 import { LEGAL_CONTENT } from './legalContent.ts';
@@ -166,6 +167,11 @@ const App: React.FC = () => {
       galleryScrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
   };
+
+  // Divide testimonials into columns
+  const firstColumn = TESTIMONIALS.slice(0, 5);
+  const secondColumn = TESTIMONIALS.slice(5, 9);
+  const thirdColumn = TESTIMONIALS.slice(9, 13);
 
   return (
     <div className="bg-white font-sans selection:bg-forest-200 selection:text-forest-950 text-forest-950 relative">
@@ -744,9 +750,35 @@ const App: React.FC = () => {
                 </div>
               </section>
 
-              {/* --- TESTIMONIALS SECTION --- */}
-              <section className="py-24 bg-forest-50 relative overflow-hidden">
-                <Testimonials />
+              {/* --- NEW TESTIMONIALS SECTION (VERTICAL MARQUEE) --- */}
+              <section className="bg-forest-50 py-24 lg:py-32 relative overflow-hidden">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                  
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+                    viewport={{ once: true }}
+                    className="flex flex-col items-center justify-center max-w-2xl mx-auto text-center mb-16"
+                  >
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100/50 text-emerald-700 text-xs font-bold uppercase tracking-wider mb-6">
+                       <Star className="w-3 h-3 fill-current" /> Verifizierte Bewertungen
+                    </div>
+
+                    <h2 className="text-4xl lg:text-5xl font-serif text-forest-950 mb-6 tracking-tight">
+                      Das sagen <span className="italic text-forest-600">meine Kunden.</span>
+                    </h2>
+                    <p className="text-forest-900/60 font-light text-lg">
+                      Transparente Meinungen über MyHammer. Echte Projekte, echte Zufriedenheit.
+                    </p>
+                  </motion.div>
+
+                  <div className="flex justify-center gap-6 mt-10 [mask-image:linear-gradient(to_bottom,transparent,black_20%,black_80%,transparent)] h-[600px] overflow-hidden">
+                    <TestimonialsColumn testimonials={firstColumn} duration={40} className="w-full md:w-1/2 lg:w-1/3" />
+                    <TestimonialsColumn testimonials={secondColumn} duration={50} className="hidden md:block md:w-1/2 lg:w-1/3" />
+                    <TestimonialsColumn testimonials={thirdColumn} duration={45} className="hidden lg:block lg:w-1/3" />
+                  </div>
+                </div>
               </section>
 
               {/* --- CTA FOOTER (Pre-Footer) --- */}

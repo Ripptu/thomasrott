@@ -10,12 +10,13 @@ export interface ServicePackage {
 }
 
 export interface Testimonial {
-  quote: string;
-  author: string;
-  role: string;
+  quote: string; // The review text
+  author: string; // Name + Location
+  role: string; // Date
+  service?: string; // The service performed
+  id?: number;
   company?: string;
   avatar?: string;
-  id?: number;
 }
 
 export interface Message {
