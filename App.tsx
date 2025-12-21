@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
-  Menu, X, Check, ArrowRight, Phone, Hammer, Clipboard, Star, Quote, ArrowUpRight, MapPin, CircleDashed, Camera
+  Menu, X, Check, ArrowRight, ArrowLeft, Phone, Hammer, Clipboard, Star, Quote, ArrowUpRight, MapPin, CircleDashed, Camera
 } from 'lucide-react';
 import { NAV_LINKS, HERO_HEADLINE, HERO_SUBTEXT, SERVICE_PACKAGES, PROCESS_STEPS, LOCATION_CITIES, GALLERY_IMAGES } from './constants.tsx';
 import { Button } from './components/Button.tsx';
@@ -16,6 +16,9 @@ const App: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [currentView, setCurrentView] = useState<ViewState>('home');
+  
+  // Gallery Scroll Ref
+  const galleryScrollRef = useRef<HTMLDivElement>(null);
   
   // Intersection Observer state for Process Section animation
   const [isProcessVisible, setIsProcessVisible] = useState(false);
@@ -40,7 +43,6 @@ const App: React.FC = () => {
         win.gsap.registerPlugin(win.ScrollTrigger, win.ScrollSmoother);
 
         // 120Hz Optimization: Disable lag smoothing to prevent micro-stutters
-        // This forces the animation to stay strictly synchronized with the scroll position
         win.gsap.ticker.lagSmoothing(0);
 
         // Check if smoother already exists to avoid duplicates on re-renders
@@ -48,7 +50,7 @@ const App: React.FC = () => {
           win.ScrollSmoother.create({
             wrapper: "#smooth-wrapper",
             content: "#smooth-content",
-            smooth: 1.35, // TUNED: The golden ratio for 120Hz feel (not too heavy, not too fast)
+            smooth: 0.8, // CHANGED: From 1.35 to 0.8 for a more "standard" smooth feel, less cinematic float
             effects: true,
             smoothTouch: 0.1, // Keep touch responsive
             normalizeScroll: true, // Prevents bounce on mobile
@@ -124,9 +126,6 @@ const App: React.FC = () => {
         setTimeout(() => {
           const element = document.querySelector(href);
           if (element) {
-            // With ScrollSmoother, we should use the plugin's scrollTo if available, 
-            // but standard scrollIntoView works if the library intercepts it properly.
-            // Using GSAP scrollTo is safer for smoother:
             const win = window as any;
             if (win.ScrollSmoother && win.ScrollSmoother.get()) {
                win.ScrollSmoother.get().scrollTo(element, true, "center center");
@@ -147,7 +146,6 @@ const App: React.FC = () => {
         }
       }
     } else {
-      // Handle external links normally if any
       window.location.href = href;
     }
   };
@@ -159,6 +157,13 @@ const App: React.FC = () => {
         win.ScrollSmoother.get().scrollTop(0);
     } else {
         window.scrollTo(0, 0);
+    }
+  };
+
+  const scrollGallery = (direction: 'left' | 'right') => {
+    if (galleryScrollRef.current) {
+      const scrollAmount = direction === 'left' ? -400 : 400;
+      galleryScrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
   };
 
@@ -229,13 +234,11 @@ const App: React.FC = () => {
             
             {/* Desktop Links (Hidden on Mobile) */}
             <div className={`hidden md:flex items-center gap-8 ${isMenuOpen ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}>
-              {/* Added Logo in Header */}
               <img 
                 src="https://i.postimg.cc/pTPCtyfc/Logo-neu.png" 
                 alt="Logo Small" 
                 className="h-8 w-auto object-contain mr-2 brightness-0 invert" 
               />
-              
               {NAV_LINKS.map(link => (
                 <a 
                   key={link.label} 
@@ -261,7 +264,6 @@ const App: React.FC = () => {
                 {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
               </button>
               
-              {/* Name/Logo on Mobile */}
               <div className={`
                 flex items-center gap-2
                 transition-opacity duration-300
@@ -280,7 +282,6 @@ const App: React.FC = () => {
 
             {/* CTA Button & Socials (Desktop) */}
             <div className={`transition-opacity duration-300 flex items-center gap-3 ${isMenuOpen ? 'opacity-0 hidden' : 'opacity-100 block'}`}>
-               {/* Desktop Socials */}
                <div className="hidden md:flex items-center gap-1.5 mr-2">
                   {socialLinks.map((link, idx) => (
                     <a 
@@ -308,7 +309,7 @@ const App: React.FC = () => {
             </div>
           </div>
 
-          {/* Mobile Menu Dropdown (Inside the Dynamic Island) */}
+          {/* Mobile Menu Dropdown */}
           <div className={`
             md:hidden flex flex-col items-center
             transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] origin-top
@@ -327,7 +328,6 @@ const App: React.FC = () => {
                 </a>
               ))}
               
-              {/* Mobile Socials */}
               <div className="flex items-center justify-center gap-6 mt-6 pb-2">
                  {socialLinks.map((link, idx) => (
                     <a 
@@ -368,16 +368,13 @@ const App: React.FC = () => {
             <>
               {/* --- HERO SECTION --- */}
               <section className="relative pt-32 pb-16 lg:pt-32 lg:pb-32 overflow-hidden bg-white">
-                {/* Background Gradients */}
                 <div className="absolute top-[-20%] right-[-10%] w-[800px] h-[800px] bg-forest-200/40 rounded-full blur-[120px] mix-blend-multiply pointer-events-none animate-pulse-slow" />
                 <div className="absolute top-[20%] left-[-10%] w-[600px] h-[600px] bg-forest-100/60 rounded-full blur-[100px] mix-blend-multiply pointer-events-none" />
 
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                   <div className="flex flex-col lg:grid lg:grid-cols-2 gap-12 lg:gap-12 items-center">
                     
-                    {/* Text Content */}
                     <div className="max-w-2xl text-center lg:text-left order-1">
-                      
                       <h1 className="text-5xl lg:text-7xl font-serif text-forest-950 mb-6 tracking-tight leading-[1.1]">
                         Nicht nur gepflegt. <br/>
                         <span className="italic text-forest-600">Sondern perfektioniert.</span>
@@ -408,7 +405,6 @@ const App: React.FC = () => {
                         </Button>
                       </div>
                       
-                      {/* Modern Location Dashboard - Minimalist */}
                       <div className="mt-12 lg:mt-16 pt-8 border-t border-forest-900/5">
                         <div className="flex flex-col gap-4 items-center lg:items-start">
                           <div className="flex flex-wrap items-center justify-center lg:justify-start gap-6 text-sm">
@@ -423,7 +419,6 @@ const App: React.FC = () => {
                             </div>
                           </div>
                           
-                          {/* Animated City Ticker */}
                           <div className="w-full overflow-hidden relative h-6 mask-gradient-x max-w-lg">
                              <div className="absolute flex whitespace-nowrap animate-marquee">
                                 {LOCATION_CITIES.map((city, i) => (
@@ -451,7 +446,6 @@ const App: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Image Content - Smaller & 3D Effect */}
                     <div className="relative order-2 w-full max-w-[320px] lg:max-w-[380px] mx-auto perspective-1000">
                        <div 
                          className="relative rounded-[2rem] overflow-hidden shadow-2xl border border-white/50 transform rotate-3 hover:rotate-0 transition-all duration-700 ease-out z-10"
@@ -466,7 +460,6 @@ const App: React.FC = () => {
                         <div className="absolute inset-0 bg-gradient-to-t from-forest-950/20 via-transparent to-transparent opacity-60" />
                       </div>
                       
-                      {/* Decorative back element for depth */}
                       <div className="absolute -inset-2 bg-forest-200/30 rounded-[2.2rem] -z-10 rotate-6 scale-95" />
                     </div>
 
@@ -480,8 +473,6 @@ const App: React.FC = () => {
                 
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                     <div className="grid lg:grid-cols-2 gap-16 items-center">
-                      
-                      {/* Checklist Visual */}
                       <div className="order-2 lg:order-1 relative">
                           <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl relative group hover:bg-white/10 transition-colors duration-500">
                             <div className="flex items-center justify-between mb-8">
@@ -517,7 +508,6 @@ const App: React.FC = () => {
                           </div>
                       </div>
 
-                      {/* Text */}
                       <div className="space-y-8 order-1 lg:order-2">
                         <div className="inline-block px-4 py-1.5 bg-white/5 border border-white/10 rounded-full backdrop-blur-md">
                           <span className="text-forest-200/90 text-xs font-bold uppercase tracking-widest">Die Philosophie</span>
@@ -563,7 +553,6 @@ const App: React.FC = () => {
                     <p className="text-forest-900/50 max-w-xl mx-auto text-lg font-light">Keine halben Sachen. Ich biete spezialisierte Lösungen statt oberflächlicher Dienste.</p>
                   </div>
 
-                  {/* Services Grid - Using Flexbox for centered wrapping of 5 items */}
                   <div className="flex flex-wrap justify-center gap-6 lg:gap-8">
                     {SERVICE_PACKAGES.map((pkg, idx) => (
                       <div 
@@ -577,7 +566,6 @@ const App: React.FC = () => {
                             }
                         `}
                       >
-                        {/* Logic for NEW and Competence Badges */}
                         {pkg.badge && (
                           <div className={`
                             absolute top-0 right-0 text-white text-[10px] font-bold px-4 py-1.5 rounded-bl-xl rounded-tr-[1.8rem] uppercase tracking-wider
@@ -624,7 +612,7 @@ const App: React.FC = () => {
                 </div>
               </section>
 
-              {/* --- NEW GALLERY SECTION (REFERENCES) --- */}
+              {/* --- NEW SWIPEABLE GALLERY SECTION --- */}
               <section id="gallery" className="py-24 lg:py-32 bg-white relative">
                  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                    <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
@@ -636,28 +624,57 @@ const App: React.FC = () => {
                            Gepflegte Natur ist <br/><span className="italic text-forest-500">Lebensqualität.</span>
                         </h2>
                         <p className="text-forest-900/60 font-light text-lg">
-                           Bilder sagen mehr als tausend Worte. Ein kleiner Auszug aus der täglichen Arbeit für mehr Wertschätzung Ihrer Immobilie.
+                           Bilder aus der täglichen Praxis – ehrlich und ungeschönt.
                         </p>
+                      </div>
+                      
+                      {/* Desktop Navigation Buttons */}
+                      <div className="hidden md:flex gap-4">
+                        <button onClick={() => scrollGallery('left')} className="w-12 h-12 rounded-full border border-forest-900/10 flex items-center justify-center hover:bg-forest-900 hover:text-white transition-all duration-300">
+                           <ArrowLeft className="w-5 h-5" />
+                        </button>
+                        <button onClick={() => scrollGallery('right')} className="w-12 h-12 rounded-full border border-forest-900/10 flex items-center justify-center hover:bg-forest-900 hover:text-white transition-all duration-300">
+                           <ArrowRight className="w-5 h-5" />
+                        </button>
                       </div>
                    </div>
 
-                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
+                   {/* Horizontal Scrolling Container */}
+                   <div 
+                      ref={galleryScrollRef}
+                      className="flex gap-6 overflow-x-auto snap-x snap-mandatory pb-8 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide"
+                      style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                   >
                       {GALLERY_IMAGES.map((img, idx) => (
                          <div 
                            key={idx} 
-                           className="group relative overflow-hidden rounded-2xl cursor-pointer h-[300px]"
+                           className="
+                             min-w-[85vw] sm:min-w-[400px] h-[500px] 
+                             snap-center relative flex-shrink-0 
+                             rounded-3xl overflow-hidden group cursor-pointer
+                           "
                          >
                             <img 
                               src={img.src} 
                               alt={img.alt} 
-                              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-forest-950/80 via-transparent to-transparent opacity-60 transition-opacity duration-300 group-hover:opacity-80" />
-                            <div className="absolute bottom-0 left-0 p-6 translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
-                               <span className="text-[10px] text-white/60 uppercase tracking-widest mb-1 block">{img.category}</span>
-                               <h3 className="text-xl font-serif text-white">{img.title}</h3>
+                            <div className="absolute bottom-0 left-0 p-8 translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                               <span className="text-[10px] text-white/60 uppercase tracking-widest mb-2 block">{img.category}</span>
+                               <h3 className="text-2xl font-serif text-white">{img.title}</h3>
                             </div>
                          </div>
+                      ))}
+                      
+                      {/* Spacer at end to allow scrolling last item to center */}
+                      <div className="min-w-[5vw] sm:hidden" />
+                   </div>
+                   
+                   {/* Mobile Swipe Hint */}
+                   <div className="md:hidden flex justify-center gap-2 mt-4">
+                      {GALLERY_IMAGES.map((_, idx) => (
+                        <div key={idx} className="w-1.5 h-1.5 rounded-full bg-forest-900/20" />
                       ))}
                    </div>
                  </div>
@@ -687,7 +704,6 @@ const App: React.FC = () => {
                   </div>
 
                   <div className="grid md:grid-cols-3 gap-8 lg:gap-10 relative">
-                     {/* Staggered Cards */}
                     {PROCESS_STEPS.map((item, idx) => {
                       const Icon = item.icon;
                       return (
@@ -720,7 +736,6 @@ const App: React.FC = () => {
                             {item.desc}
                           </p>
                           
-                          {/* Subtle line indicator at bottom */}
                           <div className="absolute bottom-0 left-0 h-1 bg-forest-900 group-hover:bg-forest-400 w-0 group-hover:w-full transition-all duration-700 ease-in-out rounded-b-2xl" />
                         </div>
                       );
@@ -766,12 +781,10 @@ const App: React.FC = () => {
 
           {/* --- NEW MODERN FOOTER (GERMAN & IMPROVED FONTS) --- */}
           <footer className="bg-forest-950 text-white pt-24 pb-12 overflow-hidden relative font-sans">
-            {/* Background Texture */}
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.05),transparent_40%)] pointer-events-none" />
             
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
               
-              {/* TOP SECTION: Massive Headline */}
               <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-24 border-b border-white/10 pb-12">
                 <div className="max-w-2xl">
                   <h4 className="text-forest-400 font-bold tracking-[0.3em] uppercase mb-6 text-sm">Lassen Sie uns sprechen</h4>
@@ -792,10 +805,8 @@ const App: React.FC = () => {
                 </div>
               </div>
 
-              {/* BOTTOM SECTION: Grid */}
               <div className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-8">
                 
-                {/* Brand */}
                 <div className="md:col-span-4">
                   <div className="text-2xl font-serif font-bold mb-4">Thomas Rott</div>
                   <p className="text-white/60 text-base max-w-xs leading-relaxed font-light">
@@ -817,7 +828,6 @@ const App: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Navigation */}
                 <div className="md:col-span-4 flex flex-col gap-4">
                   <span className="text-xs font-bold text-white/30 uppercase tracking-widest mb-2">Navigation</span>
                   <button onClick={(e) => handleNavClick(e as any, '#services')} className="text-2xl font-serif text-left hover:translate-x-2 transition-transform duration-300 hover:text-forest-300 w-fit">Expertise</button>
@@ -825,7 +835,6 @@ const App: React.FC = () => {
                   <button onClick={(e) => handleNavClick(e as any, '#about')} className="text-2xl font-serif text-left hover:translate-x-2 transition-transform duration-300 hover:text-forest-300 w-fit">Philosophie</button>
                 </div>
 
-                {/* Legal / Address */}
                 <div className="md:col-span-4 flex flex-col justify-between h-full">
                   <div>
                     <span className="text-xs font-bold text-white/30 uppercase tracking-widest mb-4 block">Adresse</span>
@@ -844,7 +853,6 @@ const App: React.FC = () => {
 
               </div>
 
-              {/* Copyright */}
               <div className="mt-20 pt-8 border-t border-white/5 flex justify-between items-center text-xs text-white/30 uppercase tracking-widest font-medium">
                 <span>© 2025 Alle Rechte vorbehalten.</span>
                 <span>Qualität aus Bayern.</span>

@@ -94,34 +94,16 @@ export const GALLERY_IMAGES: GalleryItem[] = [
     category: "Gartenpflege"
   },
   {
+    src: "https://i.postimg.cc/jqcqHjMd/Whats-App-Image-2025-12-21-at-15-45-22.jpg",
+    alt: "Arbeit am Objekt",
+    title: "Einsatz vor Ort",
+    category: "Objektbetreuung"
+  },
+  {
     src: "https://i.postimg.cc/j5XT484R/Whats-App-Image-2025-12-21-at-15-46-05.jpg",
     alt: "Gepflegte Gartenanlage",
     title: "Grünanlagenpflege",
     category: "Gartenpflege"
-  },
-  {
-    src: "https://images.unsplash.com/photo-1557429287-b2e26467fc2b?q=80&w=1000&auto=format&fit=crop",
-    alt: "Gepflegter Rasen und moderner Gartenweg",
-    title: "Präzision im Grünen",
-    category: "Gartenpflege"
-  },
-  {
-    src: "https://images.unsplash.com/photo-1628032731853-27a5658b6884?q=80&w=1000&auto=format&fit=crop",
-    alt: "Formschnitt Hecke",
-    title: "Formschnitt & Hecken",
-    category: "Gartenpflege"
-  },
-  {
-    src: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=1000&auto=format&fit=crop",
-    alt: "Saubere Wohnanlage Eingangsbereich",
-    title: "Gepflegte Wohnanlagen",
-    category: "Objektbetreuung"
-  },
-  {
-    src: "https://images.unsplash.com/photo-1599423612502-f383e5362939?q=80&w=1000&auto=format&fit=crop",
-    alt: "Professionelle Reinigungsgeräte",
-    title: "Professionelles Equipment",
-    category: "Reinigung"
   }
 ];
 
