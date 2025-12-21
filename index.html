@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Thomas Rott | Premium Objektbetreuung</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Replaced Inter with Manrope for better readability and modern aesthetic -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Manrope:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Manrope', 'sans-serif'], // Changed to Manrope
+              serif: ['Playfair Display', 'serif'],
+            },
+            colors: {
+              forest: {
+                950: '#0a1612', // Avoid pure black: Deep Green-Black
+                900: '#112921', // Dark luxury green
+                800: '#1b3b31',
+                700: '#265244',
+                600: '#346b5a', // Muted elegant primary
+                500: '#468571',
+                400: '#65a892',
+                300: '#8ecbb6',
+                200: '#bce8da',
+                100: '#def7ef',
+                50: '#f2f9f7', // Tinted white
+              },
+              slate: {
+                50: '#f8faf9', // Warmer/Greener gray
+                100: '#f1f4f3',
+              }
+            },
+            animation: {
+              'float': 'float 6s ease-in-out infinite',
+              'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              'fade-up': 'fadeUp 0.8s ease-out forwards',
+            },
+            keyframes: {
+              float: {
+                '0%, 100%': { transform: 'translateY(0)' },
+                '50%': { transform: 'translateY(-20px)' },
+              },
+              fadeUp: {
+                '0%': { opacity: '0', transform: 'translateY(20px)' },
+                '100%': { opacity: '1', transform: 'translateY(0)' },
+              }
+            }
+          },
+        },
+      }
+    </script>
+    <style>
+      html, body {
+        height: 100%;
+        width: 100%;
+        overscroll-behavior: none; /* Prevents bounce effects that fight GSAP */
+      }
+      
+      body {
+        background-color: #ffffff;
+        color: #0a1612;
+        overflow-x: hidden;
+        overflow-y: auto;
+      }
+
+      /* GSAP Smooth Wrapper Styles */
+      #smooth-wrapper {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        overflow: hidden;
+        z-index: 1; /* Ensure content is below fixed UI elements */
+      }
+
+      #smooth-content {
+        position: relative;
+        width: 100%;
+        will-change: transform;
+        /* Hardware Acceleration Hacks for 120Hz smoothness */
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+        transform: translate3d(0, 0, 0);
+        perspective: 1000px;
+      }
+
+      /* Custom scrollbar */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #f2f9f7;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #346b5a;
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #265244;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@^19.2.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
+    "@google/genai": "https://esm.sh/@google/genai@^1.34.0",
+    "clsx": "https://esm.sh/clsx@^2.1.0",
+    "tailwind-merge": "https://esm.sh/tailwind-merge@^2.2.1"
+  }
+}
+</script>
+</head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="index.tsx"></script>
+    <!-- GSAP Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollSmoother.min.js"></script>
+  </body>
+</html>

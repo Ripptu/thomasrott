@@ -1,0 +1,7 @@
+{
+  "name": "Thomas Rott | Premium Objektbetreuung",
+  "description": "Moderne Objektbetreuung für anspruchsvolle Eigentümer in Oberbayern. Werterhalt durch Präzision und persönliche Verantwortung.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
