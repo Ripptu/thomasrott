@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { 
   Menu, X, Check, ArrowRight, ArrowLeft, Phone, Hammer, Clipboard, Star, Quote, ArrowUpRight, MapPin, CircleDashed, Camera
 } from 'lucide-react';
@@ -18,12 +18,13 @@ const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [currentView, setCurrentView] = useState<ViewState>('home');
   
-  // Gallery Scroll Ref
+  // Refs for animations
   const galleryScrollRef = useRef<HTMLDivElement>(null);
+  const heroTextRef = useRef<HTMLDivElement>(null);
+  const processRef = useRef<HTMLElement>(null);
   
   // Intersection Observer state for Process Section animation
   const [isProcessVisible, setIsProcessVisible] = useState(false);
-  const processRef = useRef<HTMLElement>(null);
 
   // Loading Animation Timer
   useEffect(() => {
@@ -33,36 +34,58 @@ const App: React.FC = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Initialize GSAP ScrollSmoother
-  useEffect(() => {
-    // We access the global window objects loaded via CDN in index.html
+  // Initialize GSAP ScrollSmoother & Animations
+  useLayoutEffect(() => {
     const win = window as any;
+    let ctx: any;
     
     // Slight delay to ensure DOM is fully ready and scripts are loaded
     const timer = setTimeout(() => {
       if (win.gsap && win.ScrollTrigger && win.ScrollSmoother) {
         win.gsap.registerPlugin(win.ScrollTrigger, win.ScrollSmoother);
 
-        // 120Hz Optimization: Disable lag smoothing to prevent micro-stutters
+        // 120Hz Optimization
         win.gsap.ticker.lagSmoothing(0);
 
-        // Check if smoother already exists to avoid duplicates on re-renders
-        if (!win.ScrollSmoother.get()) {
-          win.ScrollSmoother.create({
-            wrapper: "#smooth-wrapper",
-            content: "#smooth-content",
-            smooth: 0.8, // CHANGED: From 1.35 to 0.8 for a more "standard" smooth feel, less cinematic float
-            effects: true,
-            smoothTouch: 0.1, // Keep touch responsive
-            normalizeScroll: true, // Prevents bounce on mobile
-            ignoreMobileResize: true // Crucial for mobile performance
-          });
-        }
+        // Create Context for easy cleanup
+        ctx = win.gsap.context(() => {
+            // Initialize Smoother if not exists
+            if (!win.ScrollSmoother.get()) {
+              win.ScrollSmoother.create({
+                wrapper: "#smooth-wrapper",
+                content: "#smooth-content",
+                smooth: 1.0, // Increased smoothness for more "weight"
+                effects: true, // Enables data-speed and data-lag
+                smoothTouch: 0.1,
+                normalizeScroll: true,
+                ignoreMobileResize: true
+              });
+            }
+
+            // Hero Text Fade Out Effect
+            if (heroTextRef.current) {
+                win.gsap.to(heroTextRef.current, {
+                    scrollTrigger: {
+                        trigger: heroTextRef.current,
+                        start: "top top+=100",
+                        end: "bottom top",
+                        scrub: true
+                    },
+                    y: -50,
+                    opacity: 0,
+                    scale: 0.95,
+                    ease: "power1.out"
+                });
+            }
+        });
       }
     }, 100);
 
-    return () => clearTimeout(timer);
-  }, [currentView]); // Re-init if view changes (though we switch views inside content)
+    return () => {
+        clearTimeout(timer);
+        if (ctx) ctx.revert();
+    };
+  }, [currentView, isLoading]);
 
   // Handle scroll effect for dynamic island
   useEffect(() => {
@@ -213,7 +236,7 @@ const App: React.FC = () => {
       />
 
       {/* --- DYNAMIC ISLAND NAVBAR --- */}
-      <div 
+      <header 
         className={`
           fixed top-4 sm:top-6 left-0 right-0 z-[60] flex justify-center px-4 pointer-events-none
           transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)]
@@ -221,6 +244,7 @@ const App: React.FC = () => {
         `}
       >
         <nav 
+          aria-label="Hauptnavigation"
           className={`
             pointer-events-auto relative
             transition-all duration-500 cubic-bezier(0.32, 0.72, 0, 1)
@@ -265,7 +289,7 @@ const App: React.FC = () => {
                   p-2 -ml-2 rounded-full transition-colors duration-300
                   ${isMenuOpen ? 'bg-white/10 text-white' : 'text-forest-100 hover:text-white'}
                 `}
-                aria-label="Menu"
+                aria-label={isMenuOpen ? "Menü schließen" : "Menü öffnen"}
               >
                 {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
               </button>
@@ -300,6 +324,7 @@ const App: React.FC = () => {
                         hover:bg-white/10 hover:scale-110 ${link.hoverColor}
                       `}
                       title={link.label}
+                      aria-label={link.label}
                     >
                       {link.icon}
                     </a>
@@ -346,6 +371,7 @@ const App: React.FC = () => {
                         hover:bg-white/10 hover:scale-110 ${link.hoverColor}
                       `}
                       title={link.label}
+                      aria-label={link.label}
                     >
                       {link.icon}
                     </a>
@@ -364,23 +390,25 @@ const App: React.FC = () => {
              </div>
           </div>
         </nav>
-      </div>
+      </header>
 
       {/* GSAP SMOOTH WRAPPER */}
       <div id="smooth-wrapper">
-        <div id="smooth-content">
+        <main id="smooth-content">
           
           {currentView === 'home' ? (
             <>
               {/* --- HERO SECTION --- */}
               <section className="relative pt-32 pb-16 lg:pt-32 lg:pb-32 overflow-hidden bg-white">
-                <div className="absolute top-[-20%] right-[-10%] w-[800px] h-[800px] bg-forest-200/40 rounded-full blur-[120px] mix-blend-multiply pointer-events-none animate-pulse-slow" />
-                <div className="absolute top-[20%] left-[-10%] w-[600px] h-[600px] bg-forest-100/60 rounded-full blur-[100px] mix-blend-multiply pointer-events-none" />
+                {/* Parallax Background Blobs - Moving Slow (Depth) */}
+                <div data-speed="0.5" className="absolute top-[-20%] right-[-10%] w-[800px] h-[800px] bg-forest-200/40 rounded-full blur-[120px] mix-blend-multiply pointer-events-none animate-pulse-slow" />
+                <div data-speed="0.6" className="absolute top-[20%] left-[-10%] w-[600px] h-[600px] bg-forest-100/60 rounded-full blur-[100px] mix-blend-multiply pointer-events-none" />
 
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                   <div className="flex flex-col lg:grid lg:grid-cols-2 gap-12 lg:gap-12 items-center">
                     
-                    <div className="max-w-2xl text-center lg:text-left order-1">
+                    {/* Hero Text Content - Ref for FadeOut Animation */}
+                    <div ref={heroTextRef} className="max-w-2xl text-center lg:text-left order-1">
                       <h1 className="text-5xl lg:text-7xl font-serif text-forest-950 mb-6 tracking-tight leading-[1.1]">
                         Nicht nur gepflegt. <br/>
                         <span className="italic text-forest-600">Sondern perfektioniert.</span>
@@ -452,7 +480,12 @@ const App: React.FC = () => {
                       </div>
                     </div>
 
-                    <div className="relative order-2 w-full max-w-[320px] lg:max-w-[380px] mx-auto perspective-1000">
+                    {/* Hero Image - Parallax Effect with Lag (Floating Feel) */}
+                    <div 
+                        data-speed="0.85" 
+                        data-lag="0.5"
+                        className="relative order-2 w-full max-w-[320px] lg:max-w-[380px] mx-auto perspective-1000"
+                    >
                        <div 
                          className="relative rounded-[2rem] overflow-hidden shadow-2xl border border-white/50 transform rotate-3 hover:rotate-0 transition-all duration-700 ease-out z-10"
                          style={{ transformStyle: 'preserve-3d' }}
@@ -519,10 +552,10 @@ const App: React.FC = () => {
                           <span className="text-forest-200/90 text-xs font-bold uppercase tracking-widest">Die Philosophie</span>
                         </div>
                         
-                        <h3 className="text-3xl lg:text-5xl font-serif text-white/95 leading-tight">
+                        <h2 className="text-3xl lg:text-5xl font-serif text-white/95 leading-tight">
                           Qualität ist, wenn man nicht mehr <br/>
                           <span className="text-forest-400 italic">kontrollieren muss.</span>
-                        </h3>
+                        </h2>
                         
                         <div className="space-y-6 text-white/70 text-lg leading-relaxed font-light">
                           <p>
@@ -561,14 +594,14 @@ const App: React.FC = () => {
 
                   <div className="flex flex-wrap justify-center gap-6 lg:gap-8">
                     {SERVICE_PACKAGES.map((pkg, idx) => (
-                      <div 
+                      <article 
                         key={pkg.name} 
                         className={`
                             relative p-8 lg:p-10 rounded-[2rem] border transition-all duration-500 group flex flex-col
                             w-full md:w-[calc(50%-1.5rem)] lg:w-[calc(33.333%-1.5rem)]
                             ${pkg.highlight 
                             ? 'bg-white border-forest-100 shadow-[0_20px_50px_-12px_rgba(10,31,22,0.1)] z-10 scale-100 md:scale-105' 
-                            : 'bg-white/50 border-transparent hover:bg-white hover:border-forest-100/50 hover:shadow-[0_20px_40px_-12px_rgba(10,31,22,0.05)]'
+                            : 'bg-white/50 border-transparent hover:bg-white hover:border-forest-100/50 hover:shadow-[0_20px_40px_-12px_rgba(10,31,22,0.05)] hover:-translate-y-1'
                             }
                         `}
                       >
@@ -582,18 +615,18 @@ const App: React.FC = () => {
                         )}
                         
                         <div className="mb-6 lg:mb-8">
-                          <span className="text-[10px] font-bold text-forest-900/30 uppercase tracking-[0.2em]">{pkg.category}</span>
-                          <h3 className="text-2xl font-serif text-forest-900 mt-2 mb-3">{pkg.name}</h3>
-                          <p className="text-sm text-forest-900/60 leading-relaxed min-h-[60px]">{pkg.description}</p>
+                          <span className="text-[10px] font-bold text-forest-900/30 uppercase tracking-[0.2em] group-hover:text-forest-900/50 transition-colors">{pkg.category}</span>
+                          <h3 className="text-2xl font-serif text-forest-900 mt-2 mb-3 group-hover:text-forest-950 transition-colors">{pkg.name}</h3>
+                          <p className="text-sm text-forest-900/60 leading-relaxed min-h-[60px] group-hover:text-forest-800 transition-colors">{pkg.description}</p>
                         </div>
 
                         <div className="space-y-4 lg:space-y-5 mb-8 lg:mb-10 flex-grow">
                           {pkg.features.map((feature, fIdx) => (
                             <div key={fIdx} className="flex items-start gap-3 text-sm group-hover:translate-x-1 transition-transform duration-300" style={{transitionDelay: `${fIdx * 50}ms`}}>
-                              <div className="w-5 h-5 rounded-full bg-forest-50 flex items-center justify-center shrink-0 mt-0.5">
-                                <Check className="w-3 h-3 text-forest-600" />
+                              <div className="w-5 h-5 rounded-full bg-forest-50 flex items-center justify-center shrink-0 mt-0.5 group-hover:bg-forest-100 transition-colors">
+                                <Check className="w-3 h-3 text-forest-600 group-hover:text-forest-800 transition-colors" />
                               </div>
-                              <span className="text-forest-900/70">{feature}</span>
+                              <span className="text-forest-900/70 group-hover:text-forest-900 transition-colors">{feature}</span>
                             </div>
                           ))}
                         </div>
@@ -612,7 +645,7 @@ const App: React.FC = () => {
                         >
                           {pkg.cta}
                         </Button>
-                      </div>
+                      </article>
                     ))}
                   </div>
                 </div>
@@ -636,10 +669,10 @@ const App: React.FC = () => {
                       
                       {/* Desktop Navigation Buttons */}
                       <div className="hidden md:flex gap-4">
-                        <button onClick={() => scrollGallery('left')} className="w-12 h-12 rounded-full border border-forest-900/10 flex items-center justify-center hover:bg-forest-900 hover:text-white transition-all duration-300">
+                        <button onClick={() => scrollGallery('left')} className="w-12 h-12 rounded-full border border-forest-900/10 flex items-center justify-center hover:bg-forest-900 hover:text-white transition-all duration-300" aria-label="Vorheriges Bild">
                            <ArrowLeft className="w-5 h-5" />
                         </button>
-                        <button onClick={() => scrollGallery('right')} className="w-12 h-12 rounded-full border border-forest-900/10 flex items-center justify-center hover:bg-forest-900 hover:text-white transition-all duration-300">
+                        <button onClick={() => scrollGallery('right')} className="w-12 h-12 rounded-full border border-forest-900/10 flex items-center justify-center hover:bg-forest-900 hover:text-white transition-all duration-300" aria-label="Nächstes Bild">
                            <ArrowRight className="w-5 h-5" />
                         </button>
                       </div>
@@ -664,6 +697,7 @@ const App: React.FC = () => {
                               src={img.src} 
                               alt={img.alt} 
                               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                              loading="lazy"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-forest-950/80 via-transparent to-transparent opacity-60 transition-opacity duration-300 group-hover:opacity-80" />
                             <div className="absolute bottom-0 left-0 p-8 translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
@@ -853,6 +887,7 @@ const App: React.FC = () => {
                           target="_blank"
                           rel="noopener noreferrer"
                           className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white/60 hover:bg-white hover:text-forest-950 transition-all duration-300"
+                          aria-label={link.label}
                         >
                           {link.icon}
                         </a>
@@ -893,7 +928,7 @@ const App: React.FC = () => {
             </div>
           </footer>
 
-        </div>
+        </main>
       </div>
     </div>
   );
