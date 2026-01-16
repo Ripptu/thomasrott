@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { 
-  Menu, X, Check, ArrowRight, ArrowLeft, Phone, Hammer, Clipboard, Star, Quote, ArrowUpRight, MapPin, CircleDashed, Camera
+  Menu, X, Check, ArrowRight, ArrowLeft, Phone, Hammer, Clipboard, Star, Quote, ArrowUpRight, MapPin, CircleDashed, Camera, User
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { NAV_LINKS, HERO_HEADLINE, HERO_SUBTEXT, SERVICE_PACKAGES, PROCESS_STEPS, LOCATION_CITIES, GALLERY_IMAGES, TESTIMONIALS } from './constants.tsx';
@@ -90,8 +90,9 @@ const App: React.FC = () => {
   // Handle scroll effect for dynamic island
   useEffect(() => {
     const handleScroll = () => {
-      // Navbar appears only after scrolling down a bit (150px)
-      setScrolled(window.scrollY > 150);
+      const scrollY = window.scrollY;
+      // Dynamic Island appears later now, to not conflict with Hero Nav
+      setScrolled(scrollY > 600);
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
@@ -225,17 +226,7 @@ const App: React.FC = () => {
 
       {/* FIXED ELEMENTS OUTSIDE SMOOTH WRAPPER */}
       
-      {/* --- GLOBAL SCROLL BLUR VIGNETTE (MASKED) --- */}
-      <div 
-        className="fixed top-0 left-0 right-0 h-24 backdrop-blur-[6px] z-50 pointer-events-none"
-        style={{ maskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%)', WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%)' }}
-      />
-      <div 
-        className="fixed bottom-0 left-0 right-0 h-24 backdrop-blur-[6px] z-50 pointer-events-none"
-        style={{ maskImage: 'linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%)', WebkitMaskImage: 'linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%)' }}
-      />
-
-      {/* --- DYNAMIC ISLAND NAVBAR --- */}
+      {/* --- DYNAMIC ISLAND NAVBAR (Appears only after scroll) --- */}
       <header 
         className={`
           fixed top-4 sm:top-6 left-0 right-0 z-[60] flex justify-center px-4 pointer-events-none
@@ -312,26 +303,6 @@ const App: React.FC = () => {
 
             {/* CTA Button & Socials (Desktop) */}
             <div className={`transition-opacity duration-300 flex items-center gap-3 ${isMenuOpen ? 'opacity-0 hidden' : 'opacity-100 block'}`}>
-               <div className="hidden md:flex items-center gap-1.5 mr-2">
-                  {socialLinks.map((link, idx) => (
-                    <a 
-                      key={idx}
-                      href={link.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={`
-                        p-2 rounded-full text-forest-200 transition-all duration-300 
-                        hover:bg-white/10 hover:scale-110 ${link.hoverColor}
-                      `}
-                      title={link.label}
-                      aria-label={link.label}
-                    >
-                      {link.icon}
-                    </a>
-                  ))}
-                  <div className="w-px h-4 bg-white/20 mx-1" />
-               </div>
-
                <a href="tel:017667580812" className="flex items-center gap-2 bg-white text-forest-950 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider hover:bg-forest-100 transition-colors shadow-lg shadow-forest-900/20">
                   <Phone className="w-3 h-3" />
                   <span className="hidden sm:inline">Anfragen</span>
@@ -398,112 +369,76 @@ const App: React.FC = () => {
           
           {currentView === 'home' ? (
             <>
-              {/* --- HERO SECTION --- */}
-              <section className="relative pt-32 pb-16 lg:pt-32 lg:pb-32 overflow-hidden bg-white">
-                {/* Parallax Background Blobs - Moving Slow (Depth) */}
-                <div data-speed="0.5" className="absolute top-[-20%] right-[-10%] w-[800px] h-[800px] bg-forest-200/40 rounded-full blur-[120px] mix-blend-multiply pointer-events-none animate-pulse-slow" />
-                <div data-speed="0.6" className="absolute top-[20%] left-[-10%] w-[600px] h-[600px] bg-forest-100/60 rounded-full blur-[100px] mix-blend-multiply pointer-events-none" />
+              {/* --- HERO SECTION (Light Fluxo Style) --- */}
+              <section 
+                className="relative min-h-[100vh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pb-48 overflow-hidden bg-white"
+              >
+                {/* 1. Base Light Background */}
+                <div className="absolute inset-0 bg-white z-0" />
 
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                  <div className="flex flex-col lg:grid lg:grid-cols-2 gap-12 lg:gap-12 items-center">
+                {/* 2. Top Green Glow (The Fluxo feel but light) */}
+                <div 
+                   className="absolute top-[-30%] left-1/2 -translate-x-1/2 w-[120%] h-[1000px] z-10 pointer-events-none opacity-40"
+                   style={{
+                     background: 'radial-gradient(circle, rgba(16, 185, 129, 0.2) 0%, rgba(255,255,255,0) 70%)',
+                   }}
+                />
+                
+                {/* 3. Subtle Noise (Low opacity for texture) */}
+                <div className="absolute inset-0 z-10 opacity-[0.04] pointer-events-none mix-blend-multiply" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E")' }} />
+
+                {/* --- HERO CONTENT (Stacked - Light Theme) --- */}
+                <div className="relative z-30 flex flex-col items-center justify-center flex-grow w-full max-w-[1100px] px-4 text-center">
                     
-                    {/* Hero Text Content - Ref for FadeOut Animation */}
-                    <div ref={heroTextRef} className="max-w-2xl text-center lg:text-left order-1">
-                      <h1 className="text-5xl lg:text-7xl font-serif text-forest-950 mb-6 tracking-tight leading-[1.1]">
-                        Nicht nur gepflegt. <br/>
-                        <span className="italic text-forest-600">Sondern perfektioniert.</span>
-                      </h1>
-                      
-                      <p className="text-lg lg:text-xl text-forest-900/60 mb-10 max-w-lg mx-auto lg:mx-0 leading-relaxed font-light mt-4">
-                        {HERO_SUBTEXT}
-                      </p>
-                      
-                      <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                        <Button size="lg" onClick={() => {
-                            const contactSection = document.getElementById('contact');
-                            if (contactSection) {
-                                const win = window as any;
-                                if (win.ScrollSmoother && win.ScrollSmoother.get()) win.ScrollSmoother.get().scrollTo(contactSection, true, "center center");
-                                else contactSection.scrollIntoView({ behavior: 'smooth' });
-                            }
-                        }}>Erstgespräch anfordern</Button>
-                        <Button variant="ghost" size="lg" className="group" onClick={() => {
-                            const serviceSection = document.getElementById('services');
-                            if (serviceSection) {
-                                const win = window as any;
-                                if (win.ScrollSmoother && win.ScrollSmoother.get()) win.ScrollSmoother.get().scrollTo(serviceSection, true, "center center");
-                                else serviceSection.scrollIntoView({ behavior: 'smooth' });
-                            }
-                        }}>
-                           Portfolio ansehen <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                        </Button>
-                      </div>
-                      
-                      <div className="mt-12 lg:mt-16 pt-8 border-t border-forest-900/5">
-                        <div className="flex flex-col gap-4 items-center lg:items-start">
-                          <div className="flex flex-wrap items-center justify-center lg:justify-start gap-6 text-sm">
-                            <div className="flex items-center gap-2 text-forest-900/80">
-                                <div className="p-1.5 bg-forest-100 rounded-full"><MapPin className="w-3.5 h-3.5 text-forest-600" /></div>
-                                <span className="font-semibold">Haag an der Amper</span>
-                            </div>
-                             <div className="flex items-center gap-2 text-forest-900/80">
-                                <div className="p-1.5 bg-forest-100 rounded-full"><CircleDashed className="w-3.5 h-3.5 text-forest-600 animate-[spin_10s_linear_infinite]" /></div>
-                                <span className="font-semibold">30km Radius</span>
-                                <span className="text-xs text-forest-600/70 bg-forest-50 px-2 py-0.5 rounded-full border border-forest-100 ml-1">Gratis Anfahrt ab 100€</span>
-                            </div>
-                          </div>
-                          
-                          <div className="w-full overflow-hidden relative h-6 mask-gradient-x max-w-lg">
-                             <div className="absolute flex whitespace-nowrap animate-marquee">
-                                {LOCATION_CITIES.map((city, i) => (
-                                   <span key={i} className="mx-3 text-forest-900/40 text-sm font-serif italic">{city} •</span>
-                                ))}
-                                {LOCATION_CITIES.map((city, i) => (
-                                   <span key={`dup-${i}`} className="mx-3 text-forest-900/40 text-sm font-serif italic">{city} •</span>
-                                ))}
-                             </div>
-                          </div>
-                          <style>{`
-                            .mask-gradient-x {
-                                mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
-                                -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
-                            }
-                            @keyframes marquee {
-                                0% { transform: translateX(0); }
-                                100% { transform: translateX(-50%); }
-                            }
-                            .animate-marquee {
-                                animation: marquee 60s linear infinite;
-                            }
-                          `}</style>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Hero Image - Parallax Effect with Lag (Floating Feel) */}
-                    <div 
-                        data-speed="0.85" 
-                        data-lag="0.5"
-                        className="relative order-2 w-full max-w-[320px] lg:max-w-[380px] mx-auto perspective-1000"
+                    {/* Large Hero Logo */}
+                    <motion.div 
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.8, ease: "easeOut" }}
+                        className="mb-10 md:mb-12"
                     >
-                       <div 
-                         className="relative rounded-[2rem] overflow-hidden shadow-2xl border border-white/50 transform rotate-3 hover:rotate-0 transition-all duration-700 ease-out z-10"
-                         style={{ transformStyle: 'preserve-3d' }}
-                        >
-                        <div className="absolute inset-0 bg-forest-900/5 opacity-0 hover:opacity-100 transition-opacity duration-700 z-10 mix-blend-overlay pointer-events-none" />
                         <img 
-                          src="https://i.postimg.cc/jqcqHjMd/Whats-App-Image-2025-12-21-at-15-45-22.jpg" 
-                          alt="Thomas Rott im Einsatz" 
-                          className="w-full h-auto object-cover transform hover:scale-105 transition-transform duration-1000"
+                            src="https://i.postimg.cc/pTPCtyfc/Logo-neu.png" 
+                            alt="Thomas Rott Logo" 
+                            className="w-72 md:w-96 lg:w-[28rem] h-auto object-contain drop-shadow-2xl" 
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-forest-950/20 via-transparent to-transparent opacity-60" />
-                      </div>
-                      
-                      <div className="absolute -inset-2 bg-forest-200/30 rounded-[2.2rem] -z-10 rotate-6 scale-95" />
+                    </motion.div>
+
+                    {/* Headline */}
+                    <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif text-forest-950 mb-8 leading-[1.1] tracking-tight drop-shadow-sm">
+                        Nicht nur gepflegt. <br />
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-forest-800">Sondern perfektioniert.</span>
+                    </h1>
+
+                    {/* Subline */}
+                    <p className="text-lg md:text-xl text-forest-900/60 max-w-2xl mx-auto leading-relaxed font-light mb-12">
+                        {HERO_SUBTEXT}
+                    </p>
+
+                    {/* CTA Button */}
+                    <div className="relative group">
+                        <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200" />
+                        <Button 
+                            size="lg"
+                            className="relative bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-10 py-5 text-lg rounded-full shadow-[0_4px_14px_0_rgba(16,185,129,0.39)] border border-transparent"
+                            onClick={() => {
+                                const contactSection = document.getElementById('contact');
+                                if (contactSection) {
+                                    const win = window as any;
+                                    if (win.ScrollSmoother && win.ScrollSmoother.get()) win.ScrollSmoother.get().scrollTo(contactSection, true, "center center");
+                                    else contactSection.scrollIntoView({ behavior: 'smooth' });
+                                }
+                            }}
+                        >
+                            Erstgespräch anfordern <ArrowRight className="w-5 h-5 ml-2" />
+                        </Button>
                     </div>
 
-                  </div>
+                    {/* Bottom Glow Decoration */}
+                    <div className="absolute bottom-[-10%] left-1/2 -translate-x-1/2 w-[80%] h-[300px] bg-emerald-500/5 blur-[80px] rounded-[100%] pointer-events-none" />
+
                 </div>
+
               </section>
 
               {/* --- PHILOSOPHY (ABOUT) SECTION --- */}
@@ -780,37 +715,6 @@ const App: React.FC = () => {
                         </div>
                       );
                     })}
-                  </div>
-                </div>
-              </section>
-
-              {/* --- NEW TESTIMONIALS SECTION (VERTICAL MARQUEE) --- */}
-              <section className="bg-forest-50 py-24 lg:py-32 relative overflow-hidden">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                  
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-                    viewport={{ once: true }}
-                    className="flex flex-col items-center justify-center max-w-2xl mx-auto text-center mb-16"
-                  >
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100/50 text-emerald-700 text-xs font-bold uppercase tracking-wider mb-6">
-                       <Star className="w-3 h-3 fill-current" /> Verifizierte Bewertungen
-                    </div>
-
-                    <h2 className="text-4xl lg:text-5xl font-serif text-forest-950 mb-6 tracking-tight">
-                      Das sagen <span className="italic text-forest-600">meine Kunden.</span>
-                    </h2>
-                    <p className="text-forest-900/60 font-light text-lg">
-                      Transparente Meinungen über MyHammer. Echte Projekte, echte Zufriedenheit.
-                    </p>
-                  </motion.div>
-
-                  <div className="flex justify-center gap-6 mt-10 [mask-image:linear-gradient(to_bottom,transparent,black_20%,black_80%,transparent)] h-[600px] overflow-hidden">
-                    <TestimonialsColumn testimonials={firstColumn} duration={40} className="w-full md:w-1/2 lg:w-1/3" />
-                    <TestimonialsColumn testimonials={secondColumn} duration={50} className="hidden md:block md:w-1/2 lg:w-1/3" />
-                    <TestimonialsColumn testimonials={thirdColumn} duration={45} className="hidden lg:block lg:w-1/3" />
                   </div>
                 </div>
               </section>
