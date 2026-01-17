@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { 
   Menu, X, Check, ArrowRight, ArrowLeft, Phone, Star, ArrowUpRight, MapPin, Camera, MessageCircle, Clipboard
 } from 'lucide-react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { NAV_LINKS, HERO_HEADLINE, HERO_SUBTEXT, SERVICE_PACKAGES, PROCESS_STEPS, LOCATION_CITIES, GALLERY_IMAGES, TESTIMONIALS } from './constants.tsx';
 import { Button } from './components/Button.tsx';
 import { InstagramIcon, FacebookIcon, WhatsAppIcon } from './components/SocialIcons.tsx';
@@ -23,11 +23,11 @@ const App: React.FC = () => {
   const servicesScrollRef = useRef<HTMLDivElement>(null);
   const lastScrollY = useRef(0); // Track last scroll position
 
-  // Loading Animation Timer - Increased to 2500ms to allow viewing the logo/buttons
+  // Loading Animation Timer - Optimized for the new satisfying animation sequence
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 2500); 
+    }, 2800); 
     return () => clearTimeout(timer);
   }, []);
 
@@ -112,31 +112,56 @@ const App: React.FC = () => {
         </a>
       </div>
 
-      {/* --- LOADING SCREEN --- */}
+      {/* --- PREMIUM LOADING SCREEN --- */}
       <div 
-        className={`fixed inset-0 z-[110] bg-white flex flex-col items-center justify-center gap-8 transition-opacity duration-700 ${isLoading ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+        className={`
+          fixed inset-0 z-[110] bg-white flex flex-col items-center justify-center gap-10 
+          transition-all duration-1000 ease-[cubic-bezier(0.76,0,0.24,1)]
+          ${isLoading 
+            ? 'opacity-100 visible' 
+            : 'opacity-0 invisible pointer-events-none scale-105 blur-sm'
+          }
+        `}
       >
-         <img 
-           src="https://i.postimg.cc/pTPCtyfc/Logo-neu.png" 
-           alt="Thomas Rott Logo" 
-           className="w-64 md:w-80 h-auto animate-pulse"
-         />
-         <div className="flex gap-4 animate-fade-up" style={{ animationDelay: '0.2s' }}>
+         {/* Logo Animation */}
+         <motion.div
+            initial={{ opacity: 0, scale: 0.9, filter: 'blur(10px)' }}
+            animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+            transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+            className="relative"
+         >
+           <img 
+             src="https://i.postimg.cc/pTPCtyfc/Logo-neu.png" 
+             alt="Thomas Rott Logo" 
+             className="w-72 md:w-96 h-auto drop-shadow-2xl"
+           />
+         </motion.div>
+
+         {/* Buttons Animation - Staggered entrance */}
+         <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8, duration: 0.8, ease: "easeOut" }}
+            className="flex flex-col sm:flex-row gap-5 items-center w-full max-w-sm px-6 sm:px-0"
+         >
             <a 
               href="tel:017667580812" 
-              className="flex items-center gap-3 px-6 py-3 bg-forest-900 text-white rounded-full shadow-lg hover:bg-forest-800 transition-transform active:scale-95"
+              className="group relative w-full sm:w-auto flex-1 flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-br from-forest-900 to-forest-800 text-white rounded-2xl shadow-[0_10px_30px_-10px_rgba(17,41,33,0.5)] hover:shadow-[0_20px_40px_-10px_rgba(17,41,33,0.6)] transition-all duration-300 hover:-translate-y-1 active:scale-95 overflow-hidden"
             >
-              <Phone className="w-5 h-5" />
-              <span className="font-medium">Anrufen</span>
+              <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <Phone className="w-5 h-5 text-forest-200" />
+              <span className="font-sans font-bold tracking-wide">Anrufen</span>
             </a>
+
             <a 
               href="https://wa.me/4917667580812" 
-              className="flex items-center gap-3 px-6 py-3 bg-[#25D366] text-white rounded-full shadow-lg hover:bg-[#20bd5a] transition-transform active:scale-95"
+              className="group relative w-full sm:w-auto flex-1 flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-br from-[#25D366] to-[#1da851] text-white rounded-2xl shadow-[0_10px_30px_-10px_rgba(37,211,102,0.4)] hover:shadow-[0_20px_40px_-10px_rgba(37,211,102,0.5)] transition-all duration-300 hover:-translate-y-1 active:scale-95 overflow-hidden"
             >
-              <WhatsAppIcon className="w-5 h-5" />
-              <span className="font-medium">WhatsApp</span>
+              <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <WhatsAppIcon className="w-5 h-5 text-white" />
+              <span className="font-sans font-bold tracking-wide">WhatsApp</span>
             </a>
-         </div>
+         </motion.div>
       </div>
 
       {/* --- HEADER --- */}
@@ -258,7 +283,7 @@ const App: React.FC = () => {
                          <div className="flex gap-1 text-yellow-400 mb-1 drop-shadow-[0_0_8px_rgba(250,204,21,0.8)]">
                             {[1,2,3,4,5].map(i => <Star key={i} className="w-4 h-4 fill-current" />)}
                          </div>
-                         <span className="text-xs font-medium text-forest-900/60">4,8 Sterne Bewertung</span>
+                         <span className="text-xs font-medium text-forest-900/60">4,7 Sterne Bewertung</span>
                       </div>
                       <div className="h-8 w-px bg-gray-200 hidden sm:block"></div>
                       <div className="hidden sm:block text-xs font-medium text-forest-900/60">
@@ -480,7 +505,7 @@ const App: React.FC = () => {
                   </div>
                   
                   <div className="text-center mt-12">
-                     <a href="https://www.my-hammer.de/auftragnehmer/thomas-rott-facility-management" target="_blank" rel="noopener" className="text-forest-600 font-bold hover:underline">
+                     <a href="https://www.my-hammer.de/auftragnehmer/facility-management-rott" target="_blank" rel="noopener" className="text-forest-600 font-bold hover:underline">
                         Alle Bewertungen auf MyHammer ansehen →
                      </a>
                   </div>

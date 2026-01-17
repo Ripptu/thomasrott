@@ -101,10 +101,58 @@ export const GALLERY_IMAGES: GalleryItem[] = [
     category: "Objektbetreuung"
   },
   {
+    src: "https://www.my-hammer.de/images/sp/original/7e1c9b79-5161-4acf-953c-38b57a421414.jpg",
+    alt: "Gepflegte Grünanlagen",
+    title: "Grünpflege Detail",
+    category: "Gartenpflege"
+  },
+  {
+    src: "https://www.my-hammer.de/images/sp/original/733ca733-2ccc-4fab-9510-9da2f3386319.jpg",
+    alt: "Professioneller Heckenschnitt",
+    title: "Heckenschnitt",
+    category: "Gartenpflege"
+  },
+  {
     src: "https://i.postimg.cc/j5XT484R/Whats-App-Image-2025-12-21-at-15-46-05.jpg",
     alt: "Gepflegte Gartenanlage",
     title: "Grünanlagenpflege",
     category: "Gartenpflege"
+  },
+  {
+    src: "https://www.my-hammer.de/images/sp/original/1017dbcf-4967-4b7d-a1ed-60600b4b0896.jpg",
+    alt: "Objektbetreuung Außenbereich",
+    title: "Außenanlagen",
+    category: "Objektbetreuung"
+  },
+  {
+    src: "https://www.my-hammer.de/images/sp/original/bf72f244-f4df-4f53-aad2-e467440b0bc6.jpg",
+    alt: "Rasenpflege und Instandhaltung",
+    title: "Rasenpflege",
+    category: "Gartenpflege"
+  },
+  {
+    src: "https://www.my-hammer.de/images/sp/original/e4e0441f-0fb6-4914-8e75-bcae6c92c672.jpg",
+    alt: "Professioneller Maschineneinsatz",
+    title: "Professionelles Gerät",
+    category: "Technik"
+  },
+  {
+    src: "https://www.my-hammer.de/images/sp/original/9d8c202b-9eb0-4c57-b6e9-ac4a38fa826d.jpg",
+    alt: "Saubere Pflasterflächen",
+    title: "Flächenpflege",
+    category: "Objektbetreuung"
+  },
+  {
+    src: "https://www.my-hammer.de/images/sp/original/bd5a0998-0ee7-4c64-98d5-f0775b48dd87.jpg",
+    alt: "Baumpflege und Schnitt",
+    title: "Baumpflege",
+    category: "Baumpflege"
+  },
+  {
+    src: "https://www.my-hammer.de/images/sp/original/76aed574-637e-479a-82bb-b001da011ba4.jpg",
+    alt: "Objektansicht gepflegt",
+    title: "Gesamteindruck",
+    category: "Objektbetreuung"
   }
 ];
 
