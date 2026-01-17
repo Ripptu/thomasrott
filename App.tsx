@@ -54,10 +54,10 @@ const App: React.FC = () => {
               win.ScrollSmoother.create({
                 wrapper: "#smooth-wrapper",
                 content: "#smooth-content",
-                smooth: 1.0, // Increased smoothness for more "weight"
-                effects: true, // Enables data-speed and data-lag
-                smoothTouch: 0.1,
-                normalizeScroll: true,
+                smooth: 1.0, 
+                effects: true, 
+                smoothTouch: false, // DISABLED on mobile/touch devices
+                normalizeScroll: false, // DISABLED normalization to keep native mobile feel
                 ignoreMobileResize: true
               });
             }
@@ -400,7 +400,7 @@ const App: React.FC = () => {
                         <img 
                             src="https://i.postimg.cc/pTPCtyfc/Logo-neu.png" 
                             alt="Thomas Rott Logo" 
-                            className="w-72 md:w-96 lg:w-[28rem] h-auto object-contain drop-shadow-2xl" 
+                            className="w-80 md:w-[32rem] lg:w-[42rem] h-auto object-contain drop-shadow-2xl" 
                         />
                     </motion.div>
 
