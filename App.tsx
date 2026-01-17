@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { 
-  Menu, X, Check, ArrowRight, ArrowLeft, Phone, Hammer, Clipboard, Star, Quote, ArrowUpRight, MapPin, CircleDashed, Camera, User
+  Menu, X, Check, ArrowRight, ArrowLeft, Phone, Star, ArrowUpRight, MapPin, Camera, MessageCircle, Clipboard
 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { NAV_LINKS, HERO_HEADLINE, HERO_SUBTEXT, SERVICE_PACKAGES, PROCESS_STEPS, LOCATION_CITIES, GALLERY_IMAGES, TESTIMONIALS } from './constants.tsx';
 import { Button } from './components/Button.tsx';
-import { TestimonialsColumn } from './components/ui/testimonials-columns.tsx';
 import { InstagramIcon, FacebookIcon, WhatsAppIcon } from './components/SocialIcons.tsx';
 import { LegalView } from './components/LegalView.tsx';
 import { LEGAL_CONTENT } from './legalContent.ts';
@@ -20,125 +19,27 @@ const App: React.FC = () => {
   
   // Refs for animations
   const galleryScrollRef = useRef<HTMLDivElement>(null);
-  const heroTextRef = useRef<HTMLDivElement>(null);
-  const processRef = useRef<HTMLElement>(null);
-  
-  // Intersection Observer state for Process Section animation
-  const [isProcessVisible, setIsProcessVisible] = useState(false);
+  const servicesScrollRef = useRef<HTMLDivElement>(null);
 
   // Loading Animation Timer
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 2000); // Show loading screen for 2 seconds
+    }, 1000); 
     return () => clearTimeout(timer);
   }, []);
 
-  // Initialize GSAP ScrollSmoother & Animations
-  useLayoutEffect(() => {
-    const win = window as any;
-    let ctx: any;
-    
-    // Slight delay to ensure DOM is fully ready and scripts are loaded
-    const timer = setTimeout(() => {
-      if (win.gsap && win.ScrollTrigger && win.ScrollSmoother) {
-        win.gsap.registerPlugin(win.ScrollTrigger, win.ScrollSmoother);
-
-        // 120Hz Optimization
-        win.gsap.ticker.lagSmoothing(0);
-
-        // Create Context for easy cleanup
-        ctx = win.gsap.context(() => {
-            // Initialize Smoother if not exists
-            if (!win.ScrollSmoother.get()) {
-              win.ScrollSmoother.create({
-                wrapper: "#smooth-wrapper",
-                content: "#smooth-content",
-                smooth: 1.0, 
-                effects: true, 
-                smoothTouch: false, // DISABLED on mobile/touch devices
-                normalizeScroll: false, // DISABLED normalization to keep native mobile feel
-                ignoreMobileResize: true
-              });
-            }
-
-            // Hero Text Fade Out Effect
-            if (heroTextRef.current) {
-                win.gsap.to(heroTextRef.current, {
-                    scrollTrigger: {
-                        trigger: heroTextRef.current,
-                        start: "top top+=100",
-                        end: "bottom top",
-                        scrub: true
-                    },
-                    y: -50,
-                    opacity: 0,
-                    scale: 0.95,
-                    ease: "power1.out"
-                });
-            }
-        });
-      }
-    }, 100);
-
-    return () => {
-        clearTimeout(timer);
-        if (ctx) ctx.revert();
-    };
-  }, [currentView, isLoading]);
-
-  // Handle scroll effect for dynamic island
+  // Handle scroll effect for header
   useEffect(() => {
     const handleScroll = () => {
-      const scrollY = window.scrollY;
-      // Dynamic Island appears later now, to not conflict with Hero Nav
-      setScrolled(scrollY > 600);
+      setScrolled(window.scrollY > 20);
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Observe Process Section
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsProcessVisible(true);
-        }
-      },
-      { threshold: 0.2 } // Trigger when 20% visible
-    );
-
-    if (processRef.current) {
-      observer.observe(processRef.current);
-    }
-
-    return () => {
-      if (processRef.current) observer.unobserve(processRef.current);
-    };
-  }, [currentView]); // Re-observe when view changes back to home
-
-  // Social Links Configuration
-  const socialLinks = [
-    {
-      href: "https://api.whatsapp.com/send/?phone=4917667580812&text=Hallo+Thomas%2C+ich+interessiere+mich+f%C3%BCr+Ihre+Dienstleistungen.&type=phone_number&app_absent=0",
-      icon: <WhatsAppIcon className="w-5 h-5" />,
-      label: "WhatsApp",
-      hoverColor: "hover:text-[#25D366]"
-    },
-    {
-      href: "https://www.facebook.com/share/p/1AqhBriw3f/?mibextid=wwXIfr",
-      icon: <FacebookIcon className="w-5 h-5" />,
-      label: "Facebook",
-      hoverColor: "hover:text-[#1877F2]"
-    },
-    {
-      href: "https://www.instagram.com/facilitymanagementrott?igsh=cjB1OHNocnVwcHV5&utm_source=qr",
-      icon: <InstagramIcon className="w-5 h-5" />,
-      label: "Instagram",
-      hoverColor: "hover:text-[#E4405F]"
-    }
-  ];
+  // GSAP removed for pure React implementation to ensure perfect mobile performance without script fighting
+  // The goal is native, buttery smooth touch interactions.
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
@@ -147,28 +48,13 @@ const App: React.FC = () => {
     if (href.startsWith('#')) {
       if (currentView !== 'home') {
         setCurrentView('home');
-        // Wait for render cycle then scroll
         setTimeout(() => {
           const element = document.querySelector(href);
-          if (element) {
-            const win = window as any;
-            if (win.ScrollSmoother && win.ScrollSmoother.get()) {
-               win.ScrollSmoother.get().scrollTo(element, true, "center center");
-            } else {
-               element.scrollIntoView({ behavior: 'smooth' });
-            }
-          }
+          element?.scrollIntoView({ behavior: 'smooth' });
         }, 100);
       } else {
         const element = document.querySelector(href);
-        if (element) {
-             const win = window as any;
-            if (win.ScrollSmoother && win.ScrollSmoother.get()) {
-               win.ScrollSmoother.get().scrollTo(element, true, "center center");
-            } else {
-               element.scrollIntoView({ behavior: 'smooth' });
-            }
-        }
+        element?.scrollIntoView({ behavior: 'smooth' });
       }
     } else {
       window.location.href = href;
@@ -177,272 +63,175 @@ const App: React.FC = () => {
 
   const handleLegalClick = (view: ViewState) => {
     setCurrentView(view);
-    const win = window as any;
-    if (win.ScrollSmoother && win.ScrollSmoother.get()) {
-        win.ScrollSmoother.get().scrollTop(0);
-    } else {
-        window.scrollTo(0, 0);
-    }
+    window.scrollTo(0, 0);
   };
 
-  const scrollGallery = (direction: 'left' | 'right') => {
-    if (galleryScrollRef.current) {
-      const scrollAmount = direction === 'left' ? -400 : 400;
-      galleryScrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+  const scrollContainer = (ref: React.RefObject<HTMLDivElement>, direction: 'left' | 'right') => {
+    if (ref.current) {
+      const scrollAmount = direction === 'left' ? -300 : 300;
+      ref.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
   };
-
-  // Divide testimonials into columns
-  const firstColumn = TESTIMONIALS.slice(0, 5);
-  const secondColumn = TESTIMONIALS.slice(5, 9);
-  const thirdColumn = TESTIMONIALS.slice(9, 13);
 
   return (
-    <div className="bg-white font-sans selection:bg-forest-200 selection:text-forest-950 text-forest-950 relative">
+    <div className="bg-white font-sans text-forest-950 selection:bg-forest-900 selection:text-white pb-20 md:pb-0">
       
-      {/* --- LOADING ANIMATION OVERLAY --- */}
-      <div 
-        className={`fixed inset-0 z-[100] bg-white flex flex-col items-center justify-center transition-all duration-1000 ease-out pointer-events-none
-        ${isLoading ? 'opacity-100' : 'opacity-0'}
-      `}>
-         <div className="relative">
-             <img 
-               src="https://i.postimg.cc/pTPCtyfc/Logo-neu.png" 
-               alt="Thomas Rott Loading" 
-               className={`w-64 md:w-80 object-contain transition-all duration-700 transform ${isLoading ? 'scale-100 opacity-100 translate-y-0' : 'scale-90 opacity-0 -translate-y-8'}`}
-             />
-             <div className="mt-8 h-1 w-32 bg-forest-50 overflow-hidden rounded-full mx-auto">
-                <div className="h-full bg-forest-900 rounded-full animate-[loading_1.5s_ease-in-out_infinite]" style={{ width: '100%' }}></div>
-             </div>
-             <style>{`
-               @keyframes loading {
-                 0% { transform: translateX(-100%); }
-                 50% { transform: translateX(0); }
-                 100% { transform: translateX(100%); }
-               }
-             `}</style>
-         </div>
+      {/* --- MOBILE STICKY CONVERSION BAR (The Money Maker) --- */}
+      <div className="fixed bottom-0 left-0 right-0 z-[100] flex md:hidden h-[60px] shadow-[0_-4px_20px_rgba(0,0,0,0.1)]">
+        <a 
+          href="tel:017667580812" 
+          className="flex-1 bg-white text-forest-950 flex flex-col items-center justify-center border-t border-gray-100 active:bg-gray-50 transition-colors"
+        >
+          <Phone className="w-5 h-5 mb-0.5" />
+          <span className="text-[10px] font-bold uppercase tracking-wide">Anrufen</span>
+        </a>
+        <a 
+          href="https://wa.me/4917667580812?text=Hallo%20Herr%20Rott,%20ich%20hätte%20Interesse%20an%20einer%20Objektbetreuung." 
+          className="flex-1 bg-forest-900 text-white flex flex-col items-center justify-center active:bg-forest-800 transition-colors"
+        >
+          <WhatsAppIcon className="w-5 h-5 mb-0.5" />
+          <span className="text-[10px] font-bold uppercase tracking-wide">WhatsApp</span>
+        </a>
       </div>
 
-      {/* FIXED ELEMENTS OUTSIDE SMOOTH WRAPPER */}
-      
-      {/* --- DYNAMIC ISLAND NAVBAR (Appears only after scroll) --- */}
+      {/* --- LOADING SCREEN --- */}
+      <div 
+        className={`fixed inset-0 z-[110] bg-white flex items-center justify-center transition-opacity duration-700 pointer-events-none ${isLoading ? 'opacity-100' : 'opacity-0'}`}
+      >
+         <span className="text-forest-900 font-serif text-2xl animate-pulse">TR</span>
+      </div>
+
+      {/* --- HEADER --- */}
       <header 
         className={`
-          fixed top-4 sm:top-6 left-0 right-0 z-[60] flex justify-center px-4 pointer-events-none
-          transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)]
-          ${(scrolled || isMenuOpen) && !isLoading ? 'translate-y-0 opacity-100' : '-translate-y-24 opacity-0'}
+          fixed top-0 left-0 right-0 z-[90] px-4 md:px-8 py-4 transition-all duration-300
+          ${scrolled ? 'bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-100/50' : 'bg-transparent'}
         `}
       >
-        <nav 
-          aria-label="Hauptnavigation"
-          className={`
-            pointer-events-auto relative
-            transition-all duration-500 cubic-bezier(0.32, 0.72, 0, 1)
-            text-white overflow-hidden
-            ${isMenuOpen 
-              ? 'w-full max-w-[340px] rounded-[2rem] bg-forest-950 shadow-2xl ring-1 ring-white/10' 
-              : `rounded-full bg-forest-950/90 backdrop-blur-xl shadow-xl border border-white/10 px-1`
-            }
-          `}
-        >
-          {/* Main Bar Content */}
-          <div className={`
-             flex items-center justify-between
-             ${isMenuOpen ? 'px-6 pt-5 pb-2' : 'px-5 py-3 gap-6'}
-             transition-all duration-300
-          `}>
+        <div className="max-w-[1400px] mx-auto flex items-center justify-end">
+            {/* Logo REMOVED from Navbar as requested */}
             
-            {/* Desktop Links (Hidden on Mobile) */}
-            <div className={`hidden md:flex items-center gap-8 ${isMenuOpen ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}>
-              <img 
-                src="https://i.postimg.cc/pTPCtyfc/Logo-neu.png" 
-                alt="Logo Small" 
-                className="h-8 w-auto object-contain mr-2 brightness-0 invert" 
-              />
+            {/* Desktop Nav */}
+            <nav className="hidden md:flex items-center gap-8">
               {NAV_LINKS.map(link => (
                 <a 
                   key={link.label} 
                   href={link.href}
                   onClick={(e) => handleNavClick(e, link.href)}
-                  className="text-sm font-medium text-forest-100/80 hover:text-white transition-colors cursor-pointer"
+                  className="text-sm font-medium text-forest-900/60 hover:text-forest-900 transition-colors"
                 >
                   {link.label}
                 </a>
               ))}
-            </div>
-
-            {/* Mobile/Compact trigger */}
-            <div className="md:hidden flex items-center gap-3">
-              <button 
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className={`
-                  p-2 -ml-2 rounded-full transition-colors duration-300
-                  ${isMenuOpen ? 'bg-white/10 text-white' : 'text-forest-100 hover:text-white'}
-                `}
-                aria-label={isMenuOpen ? "Menü schließen" : "Menü öffnen"}
+              <Button 
+                variant="primary" 
+                size="sm" 
+                onClick={() => {
+                   const contact = document.getElementById('contact');
+                   contact?.scrollIntoView({ behavior: 'smooth' });
+                }}
               >
-                {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-              </button>
-              
-              <div className={`
-                flex items-center gap-2
-                transition-opacity duration-300
-                ${isMenuOpen ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100'}
-              `}>
-                  <img 
-                    src="https://i.postimg.cc/pTPCtyfc/Logo-neu.png" 
-                    alt="Logo Small" 
-                    className="h-6 w-auto object-contain brightness-0 invert" 
-                  />
-                  <span className="text-sm font-serif font-medium tracking-wide">
-                    Thomas Rott
-                  </span>
-              </div>
-            </div>
+                Erstgespräch
+              </Button>
+            </nav>
 
-            {/* CTA Button & Socials (Desktop) */}
-            <div className={`transition-opacity duration-300 flex items-center gap-3 ${isMenuOpen ? 'opacity-0 hidden' : 'opacity-100 block'}`}>
-               <a href="tel:017667580812" className="flex items-center gap-2 bg-white text-forest-950 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider hover:bg-forest-100 transition-colors shadow-lg shadow-forest-900/20">
-                  <Phone className="w-3 h-3" />
-                  <span className="hidden sm:inline">Anfragen</span>
-                  <span className="sm:hidden">Kontakt</span>
-               </a>
+            {/* Mobile Menu Toggle */}
+            <button 
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="md:hidden p-2 text-forest-950"
+              aria-label="Menü"
+            >
+              {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+        </div>
+
+        {/* Mobile Menu Dropdown */}
+        {isMenuOpen && (
+          <div className="absolute top-full left-0 w-full bg-white border-b border-gray-100 shadow-xl p-4 flex flex-col gap-4 md:hidden">
+            {NAV_LINKS.map(link => (
+              <a 
+                key={link.label} 
+                href={link.href}
+                onClick={(e) => handleNavClick(e, link.href)}
+                className="text-lg font-medium text-forest-950 py-2 border-b border-gray-50 last:border-0"
+              >
+                {link.label}
+              </a>
+            ))}
+            <div className="flex gap-4 pt-4 justify-center items-center">
+               <a href="#" className="p-3 bg-forest-50 rounded-full text-forest-900 hover:text-forest-700 transition-colors"><InstagramIcon className="w-5 h-5"/></a>
+               <a href="#" className="p-3 bg-forest-50 rounded-full text-forest-900 hover:text-forest-700 transition-colors"><FacebookIcon className="w-5 h-5"/></a>
+            </div>
+            <div className="flex gap-4 pt-2 justify-center">
+              <a href="https://wa.me/4917667580812" className="p-3 bg-forest-50 rounded-full text-forest-900"><WhatsAppIcon className="w-5 h-5"/></a>
+              <a href="tel:017667580812" className="p-3 bg-forest-50 rounded-full text-forest-900"><Phone className="w-5 h-5"/></a>
             </div>
           </div>
-
-          {/* Mobile Menu Dropdown */}
-          <div className={`
-            md:hidden flex flex-col items-center
-            transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] origin-top
-            ${isMenuOpen ? 'max-h-[400px] opacity-100 pb-8 pt-2 scale-100' : 'max-h-0 opacity-0 scale-95 pointer-events-none'}
-          `}>
-             <div className="flex flex-col gap-1 w-full text-center px-6">
-              {NAV_LINKS.map((link, idx) => (
-                <a 
-                  key={link.label} 
-                  href={link.href}
-                  onClick={(e) => handleNavClick(e, link.href)}
-                  className="text-xl font-serif text-white/90 py-3 border-b border-white/5 last:border-0 hover:bg-white/5 rounded-xl transition-colors cursor-pointer"
-                  style={{ transitionDelay: `${idx * 50}ms` }}
-                >
-                  {link.label}
-                </a>
-              ))}
-              
-              <div className="flex items-center justify-center gap-6 mt-6 pb-2">
-                 {socialLinks.map((link, idx) => (
-                    <a 
-                      key={idx}
-                      href={link.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={`
-                        p-3 rounded-full bg-white/5 border border-white/5 text-white/80 transition-all duration-300 
-                        hover:bg-white/10 hover:scale-110 ${link.hoverColor}
-                      `}
-                      title={link.label}
-                      aria-label={link.label}
-                    >
-                      {link.icon}
-                    </a>
-                  ))}
-              </div>
-
-              <div className="mt-4 pt-4 border-t border-white/10 w-full">
-                <a href="tel:017667580812" className="flex items-center justify-center gap-2 bg-forest-500 text-white w-full py-3 rounded-xl font-medium shadow-lg hover:bg-forest-400 transition-colors">
-                  <Phone className="w-4 h-4" />
-                  0176 / 675 808 12
-                </a>
-                <div className="mt-4 text-[10px] text-white/30 uppercase tracking-[0.2em]">
-                  Premium Objektbetreuung
-                </div>
-              </div>
-             </div>
-          </div>
-        </nav>
+        )}
       </header>
 
-      {/* GSAP SMOOTH WRAPPER */}
-      <div id="smooth-wrapper">
-        <main id="smooth-content">
-          
-          {currentView === 'home' ? (
-            <>
-              {/* --- HERO SECTION (Light Fluxo Style) --- */}
-              <section 
-                className="relative min-h-[100vh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pb-48 overflow-hidden bg-white"
-              >
-                {/* 1. Base Light Background */}
-                <div className="absolute inset-0 bg-white z-0" />
+      <main>
+        {currentView === 'home' ? (
+          <>
+            {/* --- HERO SECTION (Optimized for Mobile) --- */}
+            {/* Reduced Top Padding to move content up (pt-24 / md:pt-32) */}
+            <section className="relative pt-24 pb-16 md:pt-32 md:pb-32 px-4 md:px-8 max-w-[1400px] mx-auto overflow-hidden">
+               <div className="flex flex-col items-center text-center max-w-4xl mx-auto">
+                  
+                  {/* Badge REMOVED here */}
 
-                {/* 2. Top Green Glow (The Fluxo feel but light) */}
-                <div 
-                   className="absolute top-[-30%] left-1/2 -translate-x-1/2 w-[120%] h-[1000px] z-10 pointer-events-none opacity-40"
-                   style={{
-                     background: 'radial-gradient(circle, rgba(16, 185, 129, 0.2) 0%, rgba(255,255,255,0) 70%)',
-                   }}
-                />
-                
-                {/* 3. Subtle Noise (Low opacity for texture) */}
-                <div className="absolute inset-0 z-10 opacity-[0.04] pointer-events-none mix-blend-multiply" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E")' }} />
+                  {/* LARGE LOGO instead of Text Headline */}
+                  <img 
+                    src="https://i.postimg.cc/pTPCtyfc/Logo-neu.png" 
+                    alt="Thomas Rott Logo" 
+                    className="w-full max-w-[280px] md:max-w-[500px] h-auto mb-8 animate-fade-up"
+                    style={{ animationDelay: '0.1s' }}
+                  />
 
-                {/* --- HERO CONTENT (Stacked - Light Theme) --- */}
-                <div className="relative z-30 flex flex-col items-center justify-center flex-grow w-full max-w-[1100px] px-4 text-center">
-                    
-                    {/* Large Hero Logo */}
-                    <motion.div 
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.8, ease: "easeOut" }}
-                        className="mb-10 md:mb-12"
+                  {/* Subline */}
+                  <p className="text-lg md:text-xl text-forest-900/60 leading-relaxed max-w-2xl mb-10 md:mb-12 animate-fade-up" style={{ animationDelay: '0.2s' }}>
+                    {HERO_SUBTEXT}
+                  </p>
+
+                  {/* CTA Buttons (Stacked on Mobile for easy tapping) */}
+                  <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto animate-fade-up" style={{ animationDelay: '0.3s' }}>
+                    <Button 
+                      size="lg" 
+                      className="w-full sm:w-auto shadow-xl shadow-forest-900/20"
+                      onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
                     >
-                        <img 
-                            src="https://i.postimg.cc/pTPCtyfc/Logo-neu.png" 
-                            alt="Thomas Rott Logo" 
-                            className="w-80 md:w-[32rem] lg:w-[42rem] h-auto object-contain drop-shadow-2xl" 
-                        />
-                    </motion.div>
+                      Kostenloses Audit anfordern
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="lg" 
+                      className="w-full sm:w-auto"
+                      onClick={() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' })}
+                    >
+                      Leistungen ansehen
+                    </Button>
+                  </div>
 
-                    {/* Headline */}
-                    <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif text-forest-950 mb-8 leading-[1.1] tracking-tight drop-shadow-sm">
-                        Nicht nur gepflegt. <br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-forest-800">Sondern perfektioniert.</span>
-                    </h1>
+                  {/* Trust Indicators (Social Proof immediately visible) */}
+                  <div className="mt-8 md:mt-12 flex items-center gap-6 animate-fade-up" style={{ animationDelay: '0.4s' }}>
+                      <div className="flex flex-col items-center">
+                         {/* GLOWING STARS */}
+                         <div className="flex gap-1 text-yellow-400 mb-1 drop-shadow-[0_0_8px_rgba(250,204,21,0.8)]">
+                            {[1,2,3,4,5].map(i => <Star key={i} className="w-4 h-4 fill-current" />)}
+                         </div>
+                         <span className="text-xs font-medium text-forest-900/60">4,8 Sterne Bewertung</span>
+                      </div>
+                      <div className="h-8 w-px bg-gray-200 hidden sm:block"></div>
+                      <div className="hidden sm:block text-xs font-medium text-forest-900/60">
+                        37+ Betreute Objekte
+                      </div>
+                  </div>
 
-                    {/* Subline */}
-                    <p className="text-lg md:text-xl text-forest-900/60 max-w-2xl mx-auto leading-relaxed font-light mb-12">
-                        {HERO_SUBTEXT}
-                    </p>
+               </div>
+            </section>
 
-                    {/* CTA Button */}
-                    <div className="relative group">
-                        <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200" />
-                        <Button 
-                            size="lg"
-                            className="relative bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-10 py-5 text-lg rounded-full shadow-[0_4px_14px_0_rgba(16,185,129,0.39)] border border-transparent"
-                            onClick={() => {
-                                const contactSection = document.getElementById('contact');
-                                if (contactSection) {
-                                    const win = window as any;
-                                    if (win.ScrollSmoother && win.ScrollSmoother.get()) win.ScrollSmoother.get().scrollTo(contactSection, true, "center center");
-                                    else contactSection.scrollIntoView({ behavior: 'smooth' });
-                                }
-                            }}
-                        >
-                            Erstgespräch anfordern <ArrowRight className="w-5 h-5 ml-2" />
-                        </Button>
-                    </div>
-
-                    {/* Bottom Glow Decoration */}
-                    <div className="absolute bottom-[-10%] left-1/2 -translate-x-1/2 w-[80%] h-[300px] bg-emerald-500/5 blur-[80px] rounded-[100%] pointer-events-none" />
-
-                </div>
-
-              </section>
-
-              {/* --- PHILOSOPHY (ABOUT) SECTION --- */}
-              <section id="about" className="bg-forest-950 py-24 lg:py-32 relative overflow-hidden rounded-t-[2.5rem] lg:rounded-t-[4rem] z-20 -mt-10">
+             {/* --- PHILOSOPHY (ABOUT) SECTION (Refined Text) --- */}
+              <section id="about" className="bg-forest-950 py-16 md:py-24 relative overflow-hidden rounded-3xl md:rounded-[4rem] mx-4 md:mx-0 mb-20">
                 <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-forest-500/10 rounded-full blur-[120px] pointer-events-none mix-blend-screen" />
                 
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -494,10 +283,10 @@ const App: React.FC = () => {
                         
                         <div className="space-y-6 text-white/70 text-lg leading-relaxed font-light">
                           <p>
-                            Mein Name ist Thomas Rott. Ich habe dieses Unternehmen mit einer klaren Vision gegründet: Den Ruf des klassischen Hausmeisterservices neu zu definieren. Weg vom "Mädchen für alles", hin zum spezialisierten Partner für Werterhalt.
+                            Ich bin <strong>Thomas Rott</strong>. Ich habe dieses Unternehmen gegründet, weil "gut genug" für mich nicht reicht.
                           </p>
                           <p>
-                            Wenn Sie mich beauftragen, kaufen Sie nicht nur meine Zeit, sondern meinen Anspruch, dass Ihr Objekt zu jeder Zeit tadellos aussieht.
+                            Sie suchen keinen einfachen Hausmeister, sondern einen Partner, der Ihre Werte schützt? Dann sind wir ein Match. Ich garantiere Ihnen: Was wir anpacken, wird makellos. Wenn ich gehe, ist die Arbeit nicht nur erledigt – sie ist perfekt.
                           </p>
                         </div>
 
@@ -517,323 +306,216 @@ const App: React.FC = () => {
                 </div>
               </section>
 
-              {/* --- SERVICES SECTION --- */}
-              <section id="services" className="py-24 lg:py-32 bg-slate-50 relative overflow-hidden rounded-t-[2.5rem] lg:rounded-t-[4rem] -mt-10 z-30">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                  <div className="text-center mb-16 lg:mb-20">
-                    <h2 className="text-4xl lg:text-5xl font-serif text-forest-950 mb-6">
-                      Leistungsspektrum <span className="italic text-forest-600/80">& Exzellenz</span>
-                    </h2>
-                    <p className="text-forest-900/50 max-w-xl mx-auto text-lg font-light">Keine halben Sachen. Ich biete spezialisierte Lösungen statt oberflächlicher Dienste.</p>
+            {/* --- SERVICES (Swipeable on Mobile) --- */}
+            <section id="services" className="py-16 md:py-32 bg-forest-50/50">
+               <div className="max-w-[1400px] mx-auto px-4 md:px-8">
+                  <div className="flex justify-between items-end mb-10 md:mb-16">
+                     <div>
+                       <h2 className="text-3xl md:text-5xl font-serif text-forest-950 mb-4">Leistungsspektrum</h2>
+                       <p className="text-forest-900/60 max-w-xl">Keine halben Sachen. Spezialisierte Lösungen für Werterhalt.</p>
+                     </div>
+                     <div className="hidden md:flex gap-2">
+                        <button onClick={() => scrollContainer(servicesScrollRef, 'left')} className="p-3 rounded-full border border-forest-900/10 hover:bg-white transition-colors"><ArrowLeft className="w-5 h-5"/></button>
+                        <button onClick={() => scrollContainer(servicesScrollRef, 'right')} className="p-3 rounded-full border border-forest-900/10 hover:bg-white transition-colors"><ArrowRight className="w-5 h-5"/></button>
+                     </div>
                   </div>
 
-                  <div className="flex flex-wrap justify-center gap-6 lg:gap-8">
-                    {SERVICE_PACKAGES.map((pkg, idx) => (
-                      <article 
-                        key={pkg.name} 
-                        className={`
-                            relative p-8 lg:p-10 rounded-[2rem] border transition-all duration-500 group flex flex-col
-                            w-full md:w-[calc(50%-1.5rem)] lg:w-[calc(33.333%-1.5rem)]
-                            ${pkg.highlight 
-                            ? 'bg-white border-forest-100 shadow-[0_20px_50px_-12px_rgba(10,31,22,0.1)] z-10 scale-100 md:scale-105' 
-                            : 'bg-white/50 border-transparent hover:bg-white hover:border-forest-100/50 hover:shadow-[0_20px_40px_-12px_rgba(10,31,22,0.05)] hover:-translate-y-1'
-                            }
-                        `}
-                      >
-                        {pkg.badge && (
-                          <div className={`
-                            absolute top-0 right-0 text-white text-[10px] font-bold px-4 py-1.5 rounded-bl-xl rounded-tr-[1.8rem] uppercase tracking-wider
-                            ${pkg.badge === 'Neu' ? 'bg-forest-900 animate-pulse-slow' : 'bg-emerald-600'}
-                          `}>
-                            {pkg.badge}
-                          </div>
-                        )}
-                        
-                        <div className="mb-6 lg:mb-8">
-                          <span className="text-[10px] font-bold text-forest-900/30 uppercase tracking-[0.2em] group-hover:text-forest-900/50 transition-colors">{pkg.category}</span>
-                          <h3 className="text-2xl font-serif text-forest-900 mt-2 mb-3 group-hover:text-forest-950 transition-colors">{pkg.name}</h3>
-                          <p className="text-sm text-forest-900/60 leading-relaxed min-h-[60px] group-hover:text-forest-800 transition-colors">{pkg.description}</p>
-                        </div>
-
-                        <div className="space-y-4 lg:space-y-5 mb-8 lg:mb-10 flex-grow">
-                          {pkg.features.map((feature, fIdx) => (
-                            <div key={fIdx} className="flex items-start gap-3 text-sm group-hover:translate-x-1 transition-transform duration-300" style={{transitionDelay: `${fIdx * 50}ms`}}>
-                              <div className="w-5 h-5 rounded-full bg-forest-50 flex items-center justify-center shrink-0 mt-0.5 group-hover:bg-forest-100 transition-colors">
-                                <Check className="w-3 h-3 text-forest-600 group-hover:text-forest-800 transition-colors" />
-                              </div>
-                              <span className="text-forest-900/70 group-hover:text-forest-900 transition-colors">{feature}</span>
-                            </div>
-                          ))}
-                        </div>
-
-                        <Button 
-                          variant={pkg.highlight ? 'primary' : 'outline'} 
-                          className="w-full mt-auto"
-                          onClick={() => {
-                            const contactSection = document.getElementById('contact');
-                            if (contactSection) {
-                                const win = window as any;
-                                if (win.ScrollSmoother && win.ScrollSmoother.get()) win.ScrollSmoother.get().scrollTo(contactSection, true, "center center");
-                                else contactSection.scrollIntoView({ behavior: 'smooth' });
-                            }
-                          }}
+                  {/* Horizontal Scroll Container for Mobile */}
+                  <div 
+                    ref={servicesScrollRef}
+                    className="flex md:grid md:grid-cols-3 gap-4 md:gap-8 overflow-x-auto snap-x snap-mandatory pb-8 md:pb-0 -mx-4 px-4 md:mx-0 md:px-0 scrollbar-hide"
+                  >
+                     {SERVICE_PACKAGES.map((pkg, idx) => (
+                        <div 
+                          key={idx}
+                          className={`
+                            min-w-[85vw] md:min-w-0 snap-center
+                            flex flex-col p-8 rounded-3xl border transition-all duration-300
+                            ${pkg.highlight ? 'bg-white border-forest-200 shadow-xl' : 'bg-white/50 border-transparent hover:bg-white hover:shadow-lg'}
+                          `}
                         >
-                          {pkg.cta}
-                        </Button>
-                      </article>
+                           {pkg.badge && (
+                             <span className="self-start px-3 py-1 bg-forest-900 text-white text-[10px] font-bold uppercase tracking-wider rounded-full mb-6">
+                               {pkg.badge}
+                             </span>
+                           )}
+                           <h3 className="text-2xl font-serif text-forest-950 mb-3">{pkg.name}</h3>
+                           <p className="text-sm text-forest-900/60 mb-8 leading-relaxed flex-grow">{pkg.description}</p>
+                           
+                           <ul className="space-y-3 mb-8">
+                              {pkg.features.slice(0, 3).map((f, i) => (
+                                <li key={i} className="flex items-start gap-3 text-sm text-forest-900/80">
+                                   <Check className="w-4 h-4 text-forest-500 shrink-0 mt-0.5" />
+                                   {f}
+                                </li>
+                              ))}
+                           </ul>
+
+                           <Button variant={pkg.highlight ? 'primary' : 'outline'} size="sm" className="w-full">
+                              {pkg.cta}
+                           </Button>
+                        </div>
+                     ))}
+                  </div>
+                  {/* Mobile Swipe Hint */}
+                  <div className="flex md:hidden justify-center gap-1.5 mt-2">
+                    {SERVICE_PACKAGES.map((_, i) => (
+                      <div key={i} className={`h-1.5 rounded-full ${i === 0 ? 'w-6 bg-forest-900' : 'w-1.5 bg-forest-900/20'}`} />
                     ))}
                   </div>
-                </div>
-              </section>
+               </div>
+            </section>
 
-              {/* --- NEW SWIPEABLE GALLERY SECTION --- */}
-              <section id="gallery" className="py-24 lg:py-32 bg-white relative">
-                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                   <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
-                      <div className="max-w-xl">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-forest-50 text-forest-600 text-xs font-bold uppercase tracking-wider mb-6">
-                           <Camera className="w-3 h-3" /> Einblicke
+            {/* --- GALLERY (Trust) --- */}
+            <section id="gallery" className="py-16 md:py-32 bg-white">
+               <div className="max-w-[1400px] mx-auto px-4 md:px-8">
+                  <h2 className="text-3xl md:text-5xl font-serif text-forest-950 mb-12 text-center">Einblicke</h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                     {GALLERY_IMAGES.map((img, idx) => (
+                       <div key={idx} className="group relative aspect-square rounded-2xl overflow-hidden cursor-pointer bg-forest-50">
+                          <img 
+                            src={img.src} 
+                            alt={img.alt} 
+                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                          />
+                          {/* Clean Gallery Images - Text Removed as requested */}
+                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
+                       </div>
+                     ))}
+                  </div>
+               </div>
+            </section>
+
+            {/* --- PROCESS (Credibility) --- */}
+            <section id="process" className="py-16 md:py-32 bg-forest-900 text-white">
+               <div className="max-w-[1400px] mx-auto px-4 md:px-8">
+                  <div className="max-w-2xl mb-16">
+                     <span className="text-forest-300 text-xs font-bold uppercase tracking-widest mb-4 block">Der Ablauf</span>
+                     <h2 className="text-3xl md:text-5xl font-serif mb-6">Transparenz schafft Vertrauen.</h2>
+                     <p className="text-forest-100/60 text-lg font-light">
+                        Wir arbeiten nicht auf Zuruf, sondern mit System. So garantieren wir gleichbleibende Qualität.
+                     </p>
+                  </div>
+
+                  <div className="grid md:grid-cols-3 gap-12">
+                     {PROCESS_STEPS.map((step, idx) => (
+                        <div key={idx} className="relative">
+                           <div className="text-6xl font-serif text-forest-800 absolute -top-8 -left-4 -z-0 opacity-50 select-none">{step.step}</div>
+                           <div className="relative z-10">
+                              <h3 className="text-xl font-bold mb-4 flex items-center gap-3">
+                                 {step.title}
+                              </h3>
+                              <p className="text-forest-100/60 leading-relaxed text-sm">
+                                 {step.desc}
+                              </p>
+                           </div>
                         </div>
-                        <h2 className="text-4xl lg:text-5xl font-serif text-forest-950 mb-4">
-                           Gepflegte Natur ist <br/><span className="italic text-forest-500">Lebensqualität.</span>
-                        </h2>
-                        <p className="text-forest-900/60 font-light text-lg">
-                           Bilder aus der täglichen Praxis – ehrlich und ungeschönt.
-                        </p>
-                      </div>
-                      
-                      {/* Desktop Navigation Buttons */}
-                      <div className="hidden md:flex gap-4">
-                        <button onClick={() => scrollGallery('left')} className="w-12 h-12 rounded-full border border-forest-900/10 flex items-center justify-center hover:bg-forest-900 hover:text-white transition-all duration-300" aria-label="Vorheriges Bild">
-                           <ArrowLeft className="w-5 h-5" />
-                        </button>
-                        <button onClick={() => scrollGallery('right')} className="w-12 h-12 rounded-full border border-forest-900/10 flex items-center justify-center hover:bg-forest-900 hover:text-white transition-all duration-300" aria-label="Nächstes Bild">
-                           <ArrowRight className="w-5 h-5" />
-                        </button>
-                      </div>
-                   </div>
-
-                   {/* Horizontal Scrolling Container */}
-                   <div 
-                      ref={galleryScrollRef}
-                      className="flex gap-6 overflow-x-auto snap-x snap-mandatory pb-8 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide"
-                      style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-                   >
-                      {GALLERY_IMAGES.map((img, idx) => (
-                         <div 
-                           key={idx} 
-                           className="
-                             min-w-[85vw] sm:min-w-[400px] h-[500px] 
-                             snap-center relative flex-shrink-0 
-                             rounded-3xl overflow-hidden group cursor-pointer
-                           "
-                         >
-                            <img 
-                              src={img.src} 
-                              alt={img.alt} 
-                              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                              loading="lazy"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-forest-950/80 via-transparent to-transparent opacity-60 transition-opacity duration-300 group-hover:opacity-80" />
-                            <div className="absolute bottom-0 left-0 p-8 translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
-                               <span className="text-[10px] text-white/60 uppercase tracking-widest mb-2 block">{img.category}</span>
-                               <h3 className="text-2xl font-serif text-white">{img.title}</h3>
-                            </div>
-                         </div>
-                      ))}
-                      
-                      {/* Spacer at end to allow scrolling last item to center */}
-                      <div className="min-w-[5vw] sm:hidden" />
-                   </div>
-                   
-                   {/* Mobile Swipe Hint */}
-                   <div className="md:hidden flex justify-center gap-2 mt-4">
-                      {GALLERY_IMAGES.map((_, idx) => (
-                        <div key={idx} className="w-1.5 h-1.5 rounded-full bg-forest-900/20" />
-                      ))}
-                   </div>
-                 </div>
-              </section>
-
-              {/* --- PROCESS SECTION --- */}
-              <section id="process" ref={processRef} className="py-32 lg:py-40 bg-forest-50/50 relative">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                  <div className="flex flex-col md:flex-row md:items-end justify-between mb-20 lg:mb-24 gap-6">
-                    <div className="max-w-xl">
-                      <p className="text-[10px] font-bold tracking-[0.2em] text-forest-900/30 uppercase mb-4">Der Weg zur Zusammenarbeit</p>
-                      <h2 className="text-4xl lg:text-5xl font-serif text-forest-950 leading-tight">
-                        Effizient. <span className="italic text-forest-600/80">Transparent.</span><br/>
-                        <span className="text-forest-900/20">Kompromisslos.</span>
-                      </h2>
-                    </div>
-                    <div className="pb-2">
-                      <Button variant="outline" size="sm" onClick={() => {
-                        const contactSection = document.getElementById('contact');
-                         if (contactSection) {
-                                const win = window as any;
-                                if (win.ScrollSmoother && win.ScrollSmoother.get()) win.ScrollSmoother.get().scrollTo(contactSection, true, "center center");
-                                else contactSection.scrollIntoView({ behavior: 'smooth' });
-                            }
-                      }}>Prozess-Details ansehen</Button>
-                    </div>
+                     ))}
                   </div>
+               </div>
+            </section>
 
-                  <div className="grid md:grid-cols-3 gap-8 lg:gap-10 relative">
-                    {PROCESS_STEPS.map((item, idx) => {
-                      const Icon = item.icon;
-                      return (
-                        <div 
-                          key={idx} 
-                          className={`
-                            relative group p-8 lg:p-10 rounded-2xl 
-                            bg-white border border-forest-100/50 
-                            hover:bg-forest-950 hover:border-forest-950 
-                            transition-all duration-700 ease-out 
-                            shadow-[0_10px_30px_-10px_rgba(10,31,22,0.05)]
-                            hover:shadow-[0_30px_60px_-10px_rgba(10,31,22,0.3)]
-                            hover:-translate-y-2
-                            ${isProcessVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}
-                          `}
-                          style={{ transitionDelay: `${idx * 200}ms` }}
-                        >
-                          <div className="flex justify-between items-start mb-10 relative z-10">
-                            <div className="w-14 h-14 rounded-2xl bg-forest-50 border border-forest-100 flex items-center justify-center text-forest-600 group-hover:bg-white/10 group-hover:border-white/10 group-hover:text-white transition-colors duration-500">
-                              <Icon className="w-6 h-6" />
-                            </div>
-                            <span className="text-6xl font-serif font-bold text-forest-50 group-hover:text-white/10 transition-colors duration-500 absolute -right-2 -top-4 -z-0">
-                              {item.step}
-                            </span>
-                          </div>
-                          <h3 className="text-xl font-bold text-forest-950 group-hover:text-white mb-4 transition-colors duration-500">
-                            {item.title}
-                          </h3>
-                          <p className="text-sm text-forest-900/60 group-hover:text-white/70 leading-relaxed transition-colors duration-500">
-                            {item.desc}
-                          </p>
-                          
-                          <div className="absolute bottom-0 left-0 h-1 bg-forest-900 group-hover:bg-forest-400 w-0 group-hover:w-full transition-all duration-700 ease-in-out rounded-b-2xl" />
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              </section>
-
-              {/* --- CTA FOOTER (Pre-Footer) --- */}
-              <section id="contact" className="py-32 bg-white relative overflow-hidden flex items-center justify-center border-t border-forest-100">
-                <div className="relative z-10 text-center px-4 max-w-2xl">
-                  <div className="w-20 h-20 mx-auto bg-slate-50 rounded-3xl flex items-center justify-center mb-10 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.05)] transform rotate-3 hover:rotate-0 transition-transform duration-500">
-                    <Phone className="w-8 h-8 text-forest-600" />
-                  </div>
-                  <h2 className="text-4xl md:text-6xl font-serif text-forest-950 mb-8 tracking-tight">
-                    Bereit für ein <span className="italic text-forest-600">Upgrade?</span>
+            {/* --- TESTIMONIALS --- */}
+            <section className="py-16 md:py-32 bg-white overflow-hidden">
+               <div className="max-w-[1400px] mx-auto px-4 md:px-8">
+                  <h2 className="text-3xl md:text-5xl font-serif text-forest-950 mb-16 text-center">
+                    Was Kunden sagen
                   </h2>
-                  <p className="text-lg text-forest-900/60 mb-12 font-light">
-                    Lassen Sie uns über den Status Ihrer Immobilie sprechen. Unverbindlich, aber garantiert aufschlussreich.
-                  </p>
-                  <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-                    <Button size="lg" className="shadow-2xl shadow-forest-900/20" onClick={() => window.location.href='tel:017667580812'}>
-                      0176 / 675 808 12
-                    </Button>
-                    <a href="https://api.whatsapp.com/send/?phone=4917667580812&text=Hallo+Thomas%2C+ich+interessiere+mich+f%C3%BCr+Ihre+Dienstleistungen.&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer" className="text-forest-900 font-medium hover:text-forest-600 transition-colors flex items-center gap-2 group">
-                      Schriftliche Anfrage <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                    </a>
-                  </div>
-                </div>
-              </section>
-            </>
-          ) : (
-            <LegalView 
-              content={LEGAL_CONTENT[currentView as keyof typeof LEGAL_CONTENT]} 
-              onBack={() => setCurrentView('home')} 
-            />
-          )}
-
-          {/* --- NEW MODERN FOOTER (GERMAN & IMPROVED FONTS) --- */}
-          <footer className="bg-forest-950 text-white pt-24 pb-12 overflow-hidden relative font-sans">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.05),transparent_40%)] pointer-events-none" />
-            
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-              
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-24 border-b border-white/10 pb-12">
-                <div className="max-w-2xl">
-                  <h4 className="text-forest-400 font-bold tracking-[0.3em] uppercase mb-6 text-sm">Lassen Sie uns sprechen</h4>
-                  <div className="font-serif text-6xl md:text-8xl lg:text-9xl leading-[0.9] text-white">
-                    Bereit für <br />
-                    <span className="text-white/20 italic">Exzellenz?</span>
-                  </div>
-                </div>
-                
-                <div className="mt-12 md:mt-0 flex flex-col gap-4 items-start md:items-end">
-                  <a href="mailto:info@thomasrott.de" className="text-2xl md:text-3xl font-light hover:text-forest-400 transition-colors border-b border-white/20 pb-1 flex items-center gap-4 group">
-                    info@thomasrott.de
-                    <ArrowUpRight className="w-6 h-6 opacity-0 group-hover:opacity-100 transition-opacity -translate-y-2 translate-x-2 group-hover:translate-y-0 group-hover:translate-x-0" />
-                  </a>
-                  <a href="tel:017667580812" className="text-xl md:text-2xl font-light text-white/60 hover:text-white transition-colors">
-                    +49 176 675 808 12
-                  </a>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-8">
-                
-                <div className="md:col-span-4">
-                  <div className="text-2xl font-serif font-bold mb-4">Thomas Rott</div>
-                  <p className="text-white/60 text-base max-w-xs leading-relaxed font-light">
-                    Premium Objektbetreuung für anspruchsvolle Eigentümer. Wir definieren den Standard neu.
-                  </p>
                   
-                  <div className="flex gap-4 mt-8">
-                     {socialLinks.map((link, idx) => (
-                        <a 
-                          key={idx}
-                          href={link.href}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white/60 hover:bg-white hover:text-forest-950 transition-all duration-300"
-                          aria-label={link.label}
-                        >
-                          {link.icon}
-                        </a>
-                      ))}
-                  </div>
-                </div>
-
-                <div className="md:col-span-4 flex flex-col gap-4">
-                  <span className="text-xs font-bold text-white/30 uppercase tracking-widest mb-2">Navigation</span>
-                  <button onClick={(e) => handleNavClick(e as any, '#services')} className="text-2xl font-serif text-left hover:translate-x-2 transition-transform duration-300 hover:text-forest-300 w-fit">Expertise</button>
-                  <button onClick={(e) => handleNavClick(e as any, '#process')} className="text-2xl font-serif text-left hover:translate-x-2 transition-transform duration-300 hover:text-forest-300 w-fit">Prozess</button>
-                  <button onClick={(e) => handleNavClick(e as any, '#about')} className="text-2xl font-serif text-left hover:translate-x-2 transition-transform duration-300 hover:text-forest-300 w-fit">Philosophie</button>
-                </div>
-
-                <div className="md:col-span-4 flex flex-col justify-between h-full">
-                  <div>
-                    <span className="text-xs font-bold text-white/30 uppercase tracking-widest mb-4 block">Adresse</span>
-                    <address className="not-italic text-white/70 text-lg font-light leading-relaxed">
-                      Kreisstraße 17<br/>
-                      85410 Haag an der Amper
-                    </address>
+                  <div className="flex flex-col md:flex-row gap-6">
+                     {/* Using the simple list for mobile, complex columns for desktop could be an enhancement later */}
+                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
+                        {TESTIMONIALS.slice(0, 3).map((t, i) => (
+                           <div key={i} className="bg-forest-50 p-8 rounded-2xl border border-forest-100/50">
+                              <div className="flex gap-1 text-emerald-500 mb-4">
+                                 {[1,2,3,4,5].map(s => <Star key={s} className="w-4 h-4 fill-current" />)}
+                              </div>
+                              <p className="text-forest-900/80 mb-6 italic text-sm leading-relaxed">"{t.quote}"</p>
+                              <div className="mt-auto">
+                                <p className="text-sm font-bold text-forest-950">{t.author}</p>
+                                <p className="text-xs text-forest-900/40 uppercase tracking-wider mt-1">{t.service}</p>
+                              </div>
+                           </div>
+                        ))}
+                     </div>
                   </div>
                   
-                  <div className="flex flex-wrap gap-6 mt-12 md:mt-0 text-sm font-medium text-white/50 uppercase tracking-wider">
-                     <button onClick={() => handleLegalClick('impressum')} className="hover:text-white transition-colors">Impressum</button>
-                     <button onClick={() => handleLegalClick('datenschutz')} className="hover:text-white transition-colors">Datenschutz</button>
-                     <button onClick={() => handleLegalClick('agb')} className="hover:text-white transition-colors">AGB</button>
+                  <div className="text-center mt-12">
+                     <a href="https://www.my-hammer.de/auftragnehmer/thomas-rott-facility-management" target="_blank" rel="noopener" className="text-forest-600 font-bold hover:underline">
+                        Alle Bewertungen auf MyHammer ansehen →
+                     </a>
                   </div>
-                </div>
+               </div>
+            </section>
 
-              </div>
+            {/* --- CONTACT / FOOTER --- */}
+            <footer id="contact" className="bg-white pt-16 md:pt-32 pb-32 md:pb-12 border-t border-forest-100">
+               <div className="max-w-[1400px] mx-auto px-4 md:px-8">
+                  <div className="grid lg:grid-cols-2 gap-16 mb-24">
+                     <div>
+                        <h2 className="text-4xl md:text-6xl font-serif text-forest-950 mb-8">
+                           Bereit für <br/>Exzellenz?
+                        </h2>
+                        <p className="text-lg text-forest-900/60 mb-10 max-w-md">
+                           Kontaktieren Sie uns für ein unverbindliches Erstgespräch. Wir prüfen Ihre Anforderungen und erstellen ein individuelles Konzept.
+                        </p>
+                        
+                        <div className="flex flex-col gap-4 mb-8">
+                           <a href="tel:017667580812" className="flex items-center gap-4 text-2xl md:text-3xl font-light hover:text-emerald-700 transition-colors">
+                              <Phone className="w-6 h-6 md:w-8 md:h-8" />
+                              0176 / 675 808 12
+                           </a>
+                           <a href="mailto:info@thomasrott.de" className="flex items-center gap-4 text-2xl md:text-3xl font-light hover:text-emerald-700 transition-colors">
+                              <ArrowUpRight className="w-6 h-6 md:w-8 md:h-8" />
+                              info@thomasrott.de
+                           </a>
+                        </div>
 
-              <div className="mt-20 pt-8 border-t border-white/5 flex justify-between items-center text-xs text-white/30 uppercase tracking-widest font-medium">
-                <span>© 2025 Alle Rechte vorbehalten.</span>
-                <span>Qualität aus Bayern.</span>
-              </div>
+                        {/* Social Icons added here */}
+                        <div className="flex gap-4">
+                           <a href="#" className="p-3 bg-forest-50 rounded-full text-forest-900 hover:text-white hover:bg-forest-900 transition-colors"><InstagramIcon className="w-6 h-6"/></a>
+                           <a href="#" className="p-3 bg-forest-50 rounded-full text-forest-900 hover:text-white hover:bg-forest-900 transition-colors"><FacebookIcon className="w-6 h-6"/></a>
+                        </div>
+                     </div>
 
-            </div>
-          </footer>
+                     <div className="bg-forest-950 rounded-[2rem] p-8 md:p-12 text-white">
+                        <h3 className="text-2xl font-serif mb-8">Service-Gebiet</h3>
+                        <div className="flex flex-wrap gap-3 mb-10">
+                           {LOCATION_CITIES.slice(0, 10).map(city => (
+                              <span key={city} className="px-3 py-1 bg-white/10 rounded-full text-sm">
+                                 {city}
+                              </span>
+                           ))}
+                           <span className="px-3 py-1 bg-white/10 rounded-full text-sm italic">+ Umgebung</span>
+                        </div>
+                        <div className="space-y-2 text-white/60 text-sm">
+                           <p>Thomas Rott Facility Management</p>
+                           <p>Kreisstraße 17, 85410 Haag an der Amper</p>
+                        </div>
+                     </div>
+                  </div>
 
-        </main>
-      </div>
+                  <div className="flex flex-col md:flex-row justify-between items-center text-xs text-forest-900/40 uppercase tracking-widest pt-8 border-t border-forest-100">
+                     <div className="flex gap-6 mb-4 md:mb-0">
+                        <button onClick={() => handleLegalClick('impressum')} className="hover:text-forest-900">Impressum</button>
+                        <button onClick={() => handleLegalClick('datenschutz')} className="hover:text-forest-900">Datenschutz</button>
+                        <button onClick={() => handleLegalClick('agb')} className="hover:text-forest-900">AGB</button>
+                     </div>
+                     <p>© 2025 Thomas Rott. Qualität aus Bayern.</p>
+                  </div>
+               </div>
+            </footer>
+          </>
+        ) : (
+          <LegalView 
+            content={LEGAL_CONTENT[currentView]} 
+            onBack={() => {
+              setCurrentView('home');
+              window.scrollTo(0,0);
+            }} 
+          />
+        )}
+      </main>
     </div>
   );
 };
