@@ -14,27 +14,45 @@ type ViewState = 'home' | 'impressum' | 'agb' | 'datenschutz';
 const App: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [isVisible, setIsVisible] = useState(true); // State for navbar visibility
   const [isLoading, setIsLoading] = useState(true);
   const [currentView, setCurrentView] = useState<ViewState>('home');
   
-  // Refs for animations
+  // Refs for animations and scroll tracking
   const galleryScrollRef = useRef<HTMLDivElement>(null);
   const servicesScrollRef = useRef<HTMLDivElement>(null);
+  const lastScrollY = useRef(0); // Track last scroll position
 
-  // Loading Animation Timer
+  // Loading Animation Timer - Increased to 2500ms to allow viewing the logo/buttons
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 1000); 
+    }, 2500); 
     return () => clearTimeout(timer);
   }, []);
 
-  // Handle scroll effect for header
+  // Handle scroll effect for header (Appearance & Visibility)
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
+      const currentScrollY = window.scrollY;
+      
+      // Background Style Logic
+      setScrolled(currentScrollY > 20);
+
+      // Visibility Logic (Hide on down, Show on up)
+      if (currentScrollY > lastScrollY.current && currentScrollY > 50) {
+        // Scrolling DOWN and not at the very top -> Hide
+        setIsVisible(false);
+        setIsMenuOpen(false); // Close mobile menu if open when scrolling down
+      } else {
+        // Scrolling UP or at top -> Show
+        setIsVisible(true);
+      }
+
+      lastScrollY.current = currentScrollY;
     };
-    window.addEventListener('scroll', handleScroll);
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -96,16 +114,37 @@ const App: React.FC = () => {
 
       {/* --- LOADING SCREEN --- */}
       <div 
-        className={`fixed inset-0 z-[110] bg-white flex items-center justify-center transition-opacity duration-700 pointer-events-none ${isLoading ? 'opacity-100' : 'opacity-0'}`}
+        className={`fixed inset-0 z-[110] bg-white flex flex-col items-center justify-center gap-8 transition-opacity duration-700 ${isLoading ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
       >
-         <span className="text-forest-900 font-serif text-2xl animate-pulse">TR</span>
+         <img 
+           src="https://i.postimg.cc/pTPCtyfc/Logo-neu.png" 
+           alt="Thomas Rott Logo" 
+           className="w-64 md:w-80 h-auto animate-pulse"
+         />
+         <div className="flex gap-4 animate-fade-up" style={{ animationDelay: '0.2s' }}>
+            <a 
+              href="tel:017667580812" 
+              className="flex items-center gap-3 px-6 py-3 bg-forest-900 text-white rounded-full shadow-lg hover:bg-forest-800 transition-transform active:scale-95"
+            >
+              <Phone className="w-5 h-5" />
+              <span className="font-medium">Anrufen</span>
+            </a>
+            <a 
+              href="https://wa.me/4917667580812" 
+              className="flex items-center gap-3 px-6 py-3 bg-[#25D366] text-white rounded-full shadow-lg hover:bg-[#20bd5a] transition-transform active:scale-95"
+            >
+              <WhatsAppIcon className="w-5 h-5" />
+              <span className="font-medium">WhatsApp</span>
+            </a>
+         </div>
       </div>
 
       {/* --- HEADER --- */}
       <header 
         className={`
-          fixed top-0 left-0 right-0 z-[90] px-4 md:px-8 py-4 transition-all duration-300
+          fixed top-0 left-0 right-0 z-[90] px-4 md:px-8 py-4 transition-all duration-300 ease-in-out transform
           ${scrolled ? 'bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-100/50' : 'bg-transparent'}
+          ${isVisible ? 'translate-y-0' : '-translate-y-full'}
         `}
       >
         <div className="max-w-[1400px] mx-auto flex items-center justify-end">
