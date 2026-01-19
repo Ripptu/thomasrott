@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { 
-  Menu, X, Check, ArrowRight, ArrowLeft, Phone, Star, ArrowUpRight, MapPin, Camera, MessageCircle, Clipboard
+  Menu, X, Check, ArrowRight, ArrowLeft, Phone, Star, ArrowUpRight, MapPin, Camera, MessageCircle, Clipboard, ChevronDown
 } from 'lucide-react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { NAV_LINKS, HERO_HEADLINE, HERO_SUBTEXT, SERVICE_PACKAGES, PROCESS_STEPS, LOCATION_CITIES, GALLERY_IMAGES, TESTIMONIALS } from './constants.tsx';
@@ -17,6 +17,7 @@ const App: React.FC = () => {
   const [isVisible, setIsVisible] = useState(true); // State for navbar visibility
   const [isLoading, setIsLoading] = useState(true);
   const [currentView, setCurrentView] = useState<ViewState>('home');
+  const [visibleGalleryCount, setVisibleGalleryCount] = useState(6); // Initial gallery count
   
   // Refs for animations and scroll tracking
   const galleryScrollRef = useRef<HTMLDivElement>(null);
@@ -89,6 +90,10 @@ const App: React.FC = () => {
       const scrollAmount = direction === 'left' ? -300 : 300;
       ref.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
+  };
+
+  const handleShowMoreGallery = () => {
+    setVisibleGalleryCount(prev => Math.min(prev + 6, GALLERY_IMAGES.length));
   };
 
   return (
@@ -434,19 +439,44 @@ const App: React.FC = () => {
             <section id="gallery" className="py-16 md:py-32 bg-white">
                <div className="max-w-[1400px] mx-auto px-4 md:px-8">
                   <h2 className="text-3xl md:text-5xl font-serif text-forest-950 mb-12 text-center">Einblicke</h2>
+                  
+                  {/* Animated Gallery Grid */}
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                     {GALLERY_IMAGES.map((img, idx) => (
-                       <div key={idx} className="group relative aspect-square rounded-2xl overflow-hidden cursor-pointer bg-forest-50">
-                          <img 
-                            src={img.src} 
-                            alt={img.alt} 
-                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                          />
-                          {/* Clean Gallery Images - Text Removed as requested */}
-                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
-                       </div>
-                     ))}
+                     <AnimatePresence>
+                        {GALLERY_IMAGES.slice(0, visibleGalleryCount).map((img, idx) => (
+                           <motion.div 
+                              key={img.src} // Use src as unique key to prevent re-render issues
+                              initial={{ opacity: 0, y: 20 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, scale: 0.95 }}
+                              transition={{ duration: 0.4 }}
+                              className="group relative aspect-square rounded-2xl overflow-hidden cursor-pointer bg-forest-50"
+                           >
+                              <img 
+                                src={img.src} 
+                                alt={img.alt} 
+                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                loading="lazy"
+                              />
+                              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
+                           </motion.div>
+                        ))}
+                     </AnimatePresence>
                   </div>
+
+                  {/* Show More Button */}
+                  {visibleGalleryCount < GALLERY_IMAGES.length && (
+                     <div className="mt-12 flex justify-center">
+                        <Button 
+                           variant="outline" 
+                           onClick={handleShowMoreGallery}
+                           className="group gap-2 pl-6 pr-6"
+                        >
+                           Mehr anzeigen
+                           <ChevronDown className="w-4 h-4 transition-transform group-hover:translate-y-1" />
+                        </Button>
+                     </div>
+                  )}
                </div>
             </section>
 

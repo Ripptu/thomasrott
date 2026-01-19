@@ -153,6 +153,91 @@ export const GALLERY_IMAGES: GalleryItem[] = [
     alt: "Objektansicht gepflegt",
     title: "Gesamteindruck",
     category: "Objektbetreuung"
+  },
+  // New Images added below
+  {
+    src: "https://i.postimg.cc/BQ2yjZP5/Whats-App-Image-2026-01-17-at-1-40-04-PM.jpg",
+    alt: "Gartenpflege Projekt",
+    title: "Gartenpflege",
+    category: "Gartenpflege"
+  },
+  {
+    src: "https://i.postimg.cc/28nJ1jLw/Whats-App-Image-2026-01-17-at-1-39-57-PM.jpg",
+    alt: "Professioneller Schnitt",
+    title: "Schnittarbeiten",
+    category: "Baumpflege"
+  },
+  {
+    src: "https://i.postimg.cc/fTYFVWSg/Whats-App-Image-2026-01-17-at-1-39-56-PM.jpg",
+    alt: "Objektbetreuung Ansicht",
+    title: "Objektpflege",
+    category: "Objektbetreuung"
+  },
+  {
+    src: "https://i.postimg.cc/KvtV1c3p/Whats-App-Image-2026-01-17-at-1-39-53-PM.jpg",
+    alt: "Grünanlage gepflegt",
+    title: "Grünanlage",
+    category: "Gartenpflege"
+  },
+  {
+    src: "https://i.postimg.cc/xTL7XjNs/Whats-App-Image-2026-01-17-at-1-39-41-PM-(1).jpg",
+    alt: "Team bei der Arbeit",
+    title: "Einsatz vor Ort",
+    category: "Team"
+  },
+  {
+    src: "https://i.postimg.cc/4NpMY4H0/Whats-App-Image-2026-01-17-at-1-39-41-PM.jpg",
+    alt: "Pflegearbeiten",
+    title: "Instandhaltung",
+    category: "Objektbetreuung"
+  },
+  {
+    src: "https://i.postimg.cc/P5h7YG1Q/Whats-App-Image-2026-01-17-at-1-39-27-PM-(6).jpg",
+    alt: "Saubere Kanten",
+    title: "Detailpflege",
+    category: "Gartenpflege"
+  },
+  {
+    src: "https://i.postimg.cc/6pwPnsCc/Whats-App-Image-2026-01-17-at-1-39-27-PM-(5).jpg",
+    alt: "Heckenschnitt",
+    title: "Heckenpflege",
+    category: "Gartenpflege"
+  },
+  {
+    src: "https://i.postimg.cc/qv0Fyf2Q/Whats-App-Image-2026-01-17-at-1-39-27-PM-(4).jpg",
+    alt: "Rasenpflege",
+    title: "Rasenpflege",
+    category: "Gartenpflege"
+  },
+  {
+    src: "https://i.postimg.cc/RZ9YKrwX/Whats-App-Image-2026-01-17-at-1-39-27-PM-(3).jpg",
+    alt: "Laubentfernung",
+    title: "Saisonpflege",
+    category: "Gartenpflege"
+  },
+  {
+    src: "https://i.postimg.cc/kg9HKrWH/Whats-App-Image-2026-01-17-at-1-39-27-PM-(1).jpg",
+    alt: "Objektbetreuung",
+    title: "Objektservice",
+    category: "Objektbetreuung"
+  },
+  {
+    src: "https://i.postimg.cc/DwFNLV1R/Whats-App-Image-2026-01-17-at-1-39-26-PM-(1).jpg",
+    alt: "Außenanlage",
+    title: "Außenbereich",
+    category: "Objektbetreuung"
+  },
+  {
+    src: "https://i.postimg.cc/dVvfrMGz/Whats-App-Image-2026-01-17-at-1-39-26-PM.jpg",
+    alt: "Gepflegtes Ambiente",
+    title: "Gartenambiente",
+    category: "Gartenpflege"
+  },
+  {
+    src: "https://i.postimg.cc/nhZWB8vf/Whats-App-Image-2026-01-17-at-1-39-25-PM.jpg",
+    alt: "Detailarbeit",
+    title: "Feinschliff",
+    category: "Gartenpflege"
   }
 ];
 
