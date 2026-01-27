@@ -306,36 +306,19 @@ const App: React.FC = () => {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                     <div className="grid lg:grid-cols-2 gap-16 items-center">
                       <div className="order-2 lg:order-1 relative">
-                          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl relative group hover:bg-white/10 transition-colors duration-500">
-                            <div className="flex items-center justify-between mb-8">
-                              <div className="flex items-center gap-4">
-                                <div className="bg-forest-500/20 p-2.5 rounded-xl border border-forest-500/20 text-forest-300">
-                                  <Clipboard className="w-6 h-6" />
+                          <div className="relative rounded-3xl overflow-hidden border border-white/10 shadow-2xl group">
+                            <div className="absolute inset-0 bg-gradient-to-t from-forest-950/80 to-transparent z-10" />
+                            <img
+                              src="https://i.postimg.cc/jqcqHjMd/Whats-App-Image-2025-12-21-at-15-45-22.jpg"
+                              alt="Thomas Rott bei der Arbeit"
+                              className="w-full h-[500px] lg:h-[600px] object-cover transform transition-transform duration-700 group-hover:scale-105"
+                            />
+                            {/* Optional: Add a small badge on top of the image */}
+                            <div className="absolute bottom-8 left-8 z-20">
+                                <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full">
+                                  <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                                  <span className="text-white text-sm font-medium">Im Einsatz vor Ort</span>
                                 </div>
-                                <div>
-                                  <div className="text-[10px] text-white/40 uppercase tracking-wider">Statusbericht</div>
-                                  <div className="text-base font-serif text-white/90">Objekt "Sonnenhang"</div>
-                                </div>
-                              </div>
-                              <div className="text-right">
-                                <div className="text-[10px] text-white/40 uppercase tracking-wider mb-1">Zustand</div>
-                                <div className="text-xs font-bold text-emerald-300 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-full">Exzellent</div>
-                              </div>
-                            </div>
-
-                            <div className="space-y-4">
-                              {[
-                                { text: "Pflege Außenanlagen", done: true },
-                                { text: "Sicherheitsprüfung TG", done: true },
-                                { text: "Heckenschnitt", done: false }
-                              ].map((item, i) => (
-                                <div key={i} className={`p-4 rounded-xl flex items-center gap-4 transition-all duration-300 ${item.done ? 'bg-white/5' : 'bg-forest-500/10 border-l-2 border-forest-400'}`}>
-                                  <div className={`w-6 h-6 rounded-full flex items-center justify-center border ${item.done ? 'bg-emerald-500/20 border-emerald-500/20 text-emerald-400' : 'border-forest-400/50'}`}>
-                                    {item.done ? <Check className="w-3.5 h-3.5" /> : <div className="w-2 h-2 rounded-full bg-forest-400 animate-pulse" />}
-                                  </div>
-                                  <span className={`text-sm ${item.done ? 'text-white/40 line-through' : 'text-white/90'}`}>{item.text}</span>
-                                </div>
-                              ))}
                             </div>
                           </div>
                       </div>
