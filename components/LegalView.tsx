@@ -23,7 +23,7 @@ export const LegalView: React.FC<LegalViewProps> = ({ content, onBack }) => {
         <h1 className="text-4xl md:text-5xl font-serif text-forest-950 mb-12">{content.title}</h1>
         
         <div 
-          className="prose prose-forest prose-lg max-w-none text-forest-900/80 font-light leading-relaxed"
+          className="prose prose-forest prose-lg max-w-none text-forest-900/80 font-normal leading-relaxed"
           dangerouslySetInnerHTML={{ __html: content.content }}
         />
       </div>

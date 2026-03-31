@@ -11,6 +11,60 @@ import { LEGAL_CONTENT } from './legalContent.ts';
 
 type ViewState = 'home' | 'impressum' | 'agb' | 'datenschutz';
 
+const SmoothMarquee = ({ children }: { children: React.ReactNode }) => {
+  const scrollerRef = useRef<HTMLDivElement>(null);
+  const speed = useRef(40); // pixels per second
+  const currentSpeed = useRef(40);
+  const position = useRef(0);
+  const isHovered = useRef(false);
+
+  useEffect(() => {
+    let animationFrameId: number;
+    let lastTime = performance.now();
+
+    const loop = (time: number) => {
+      const delta = Math.min(time - lastTime, 50); // Cap delta to prevent huge jumps
+      lastTime = time;
+
+      const targetSpeed = isHovered.current ? 0 : speed.current;
+      // Lerp factor (adjust for smoothness of stop/start)
+      currentSpeed.current += (targetSpeed - currentSpeed.current) * 0.05;
+
+      position.current -= currentSpeed.current * (delta / 1000);
+
+      if (scrollerRef.current) {
+        const totalWidth = scrollerRef.current.scrollWidth;
+        const halfWidth = totalWidth / 2;
+        
+        // Wrap position
+        if (position.current <= -halfWidth) {
+          position.current += halfWidth;
+        }
+        
+        scrollerRef.current.style.transform = `translateX(${position.current}px)`;
+      }
+
+      animationFrameId = requestAnimationFrame(loop);
+    };
+
+    animationFrameId = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(animationFrameId);
+  }, []);
+
+  return (
+    <div 
+      className="flex w-max py-4" 
+      ref={scrollerRef}
+      onMouseEnter={() => isHovered.current = true}
+      onMouseLeave={() => isHovered.current = false}
+      onTouchStart={() => isHovered.current = true}
+      onTouchEnd={() => isHovered.current = false}
+    >
+       {children}
+    </div>
+  );
+};
+
 const App: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -249,13 +303,21 @@ const App: React.FC = () => {
                   
                   {/* Badge REMOVED here */}
 
-                  {/* LARGE LOGO instead of Text Headline */}
+                  {/* Logo */}
                   <img 
                     src="https://i.postimg.cc/pTPCtyfc/Logo-neu.png" 
                     alt="Thomas Rott Logo" 
-                    className="w-full max-w-[280px] md:max-w-[500px] h-auto mb-8 animate-fade-up"
-                    style={{ animationDelay: '0.1s' }}
+                    className="w-full max-w-[180px] md:max-w-[240px] h-auto mb-8 animate-fade-up mx-auto"
+                    style={{ animationDelay: '0.0s' }}
                   />
+
+                  {/* Headline */}
+                  <h1 
+                    className="text-4xl md:text-5xl lg:text-6xl font-sans font-bold tracking-tight text-forest-950 mb-6 animate-fade-up leading-tight"
+                    style={{ animationDelay: '0.1s' }}
+                  >
+                    {HERO_HEADLINE}
+                  </h1>
 
                   {/* Subline */}
                   <p className="text-lg md:text-xl text-forest-900/60 leading-relaxed max-w-2xl mb-10 md:mb-12 animate-fade-up" style={{ animationDelay: '0.2s' }}>
@@ -269,7 +331,7 @@ const App: React.FC = () => {
                       className="w-full sm:w-auto shadow-xl shadow-forest-900/20"
                       onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
                     >
-                      Kostenloses Audit anfordern
+                      Jetzt kostenloses Angebot einholen
                     </Button>
                     <Button 
                       variant="outline" 
@@ -277,7 +339,7 @@ const App: React.FC = () => {
                       className="w-full sm:w-auto"
                       onClick={() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' })}
                     >
-                      Leistungen ansehen
+                      Meine Leistungen ansehen
                     </Button>
                   </div>
 
@@ -288,11 +350,7 @@ const App: React.FC = () => {
                          <div className="flex gap-1 text-yellow-400 mb-1 drop-shadow-[0_0_8px_rgba(250,204,21,0.8)]">
                             {[1,2,3,4,5].map(i => <Star key={i} className="w-4 h-4 fill-current" />)}
                          </div>
-                         <span className="text-xs font-medium text-forest-900/60">4,7 Sterne Bewertung</span>
-                      </div>
-                      <div className="h-8 w-px bg-gray-200 hidden sm:block"></div>
-                      <div className="hidden sm:block text-xs font-medium text-forest-900/60">
-                        37+ Betreute Objekte
+                         <span className="text-xs font-medium text-forest-900/60">Von Nachbarn in Freising & Umgebung empfohlen.</span>
                       </div>
                   </div>
 
@@ -328,28 +386,28 @@ const App: React.FC = () => {
                           <span className="text-forest-200/90 text-xs font-bold uppercase tracking-widest">Die Philosophie</span>
                         </div>
                         
-                        <h2 className="text-3xl lg:text-5xl font-serif text-white/95 leading-tight">
-                          Qualität ist, wenn man nicht mehr <br/>
-                          <span className="text-forest-400 italic">kontrollieren muss.</span>
+                        <h2 className="text-3xl lg:text-5xl font-sans font-bold tracking-tight text-white/95 leading-tight">
+                          Warum Sie sich auf mich <br/>
+                          <span className="font-serif italic font-normal text-forest-400">verlassen können.</span>
                         </h2>
                         
-                        <div className="space-y-6 text-white/70 text-lg leading-relaxed font-light">
+                        <div className="space-y-6 text-white/70 text-lg leading-relaxed font-normal">
                           <p>
-                            Ich bin <strong>Thomas Rott</strong>. Ich habe dieses Unternehmen gegründet, weil "gut genug" für mich nicht reicht.
+                            Ich bin kein anonymer Konzern, bei dem Sie in der Warteschleife hängen. Wenn Sie Rott Haus & Garten beauftragen, stehe ich selbst vor Ihrer Tür.
                           </p>
                           <p>
-                            Sie suchen keinen einfachen Hausmeister, sondern einen Partner, der Ihre Werte schützt? Dann sind wir ein Match. Ich garantiere Ihnen: Was wir anpacken, wird makellos. Wenn ich gehe, ist die Arbeit nicht nur erledigt – sie ist perfekt.
+                            Mir ist wichtig, dass Ihre Hecke perfekt geschnitten ist, der Hof blitzblank ist und Sie sich um nichts mehr kümmern müssen. Mein Versprechen: Ich arbeite so sorgfältig, als wäre es mein eigenes Grundstück.
                           </p>
                         </div>
 
                         <div className="pt-8 flex gap-12 border-t border-white/10">
                            <div>
-                              <div className="text-3xl font-serif text-white">100%</div>
-                              <div className="text-[10px] text-white/40 uppercase tracking-widest mt-1">Verantwortung</div>
+                              <div className="text-3xl font-sans font-bold tracking-tight text-white">1</div>
+                              <div className="text-[10px] text-white/40 uppercase tracking-widest mt-1">Ansprechpartner</div>
                            </div>
                            <div>
-                              <div className="text-3xl font-serif text-white">24h</div>
-                              <div className="text-[10px] text-white/40 uppercase tracking-widest mt-1">Reaktionszeit</div>
+                              <div className="text-3xl font-sans font-bold tracking-tight text-white">100%</div>
+                              <div className="text-[10px] text-white/40 uppercase tracking-widest mt-1">Einsatz</div>
                            </div>
                         </div>
                       </div>
@@ -359,31 +417,26 @@ const App: React.FC = () => {
               </section>
 
             {/* --- SERVICES (Swipeable on Mobile) --- */}
-            <section id="services" className="py-16 md:py-32 bg-forest-50/50">
+            <section id="services" className="py-16 md:py-32 bg-slate-50">
                <div className="max-w-[1400px] mx-auto px-4 md:px-8">
                   <div className="flex justify-between items-end mb-10 md:mb-16">
                      <div>
-                       <h2 className="text-3xl md:text-5xl font-serif text-forest-950 mb-4">Leistungsspektrum</h2>
-                       <p className="text-forest-900/60 max-w-xl">Keine halben Sachen. Spezialisierte Lösungen für Werterhalt.</p>
-                     </div>
-                     <div className="hidden md:flex gap-2">
-                        <button onClick={() => scrollContainer(servicesScrollRef, 'left')} className="p-3 rounded-full border border-forest-900/10 hover:bg-white transition-colors"><ArrowLeft className="w-5 h-5"/></button>
-                        <button onClick={() => scrollContainer(servicesScrollRef, 'right')} className="p-3 rounded-full border border-forest-900/10 hover:bg-white transition-colors"><ArrowRight className="w-5 h-5"/></button>
+                       <h2 className="text-3xl md:text-5xl font-sans font-bold tracking-tight text-forest-950 mb-4">
+                         Leistungs<span className="font-serif italic font-normal text-forest-700">spektrum</span>
+                       </h2>
                      </div>
                   </div>
 
-                  {/* Horizontal Scroll Container for Mobile */}
-                  <div 
-                    ref={servicesScrollRef}
-                    className="flex md:grid md:grid-cols-3 gap-4 md:gap-8 overflow-x-auto snap-x snap-mandatory pb-8 md:pb-0 -mx-4 px-4 md:mx-0 md:px-0 scrollbar-hide"
-                  >
+                  {/* Grid Container for Desktop & Mobile */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 pb-8 md:pb-0">
                      {SERVICE_PACKAGES.map((pkg, idx) => (
                         <div 
                           key={idx}
                           className={`
-                            min-w-[85vw] md:min-w-0 snap-center
-                            flex flex-col p-8 rounded-3xl border transition-all duration-300
-                            ${pkg.highlight ? 'bg-white border-forest-200 shadow-xl' : 'bg-white/50 border-transparent hover:bg-white hover:shadow-lg'}
+                            relative flex flex-col p-8 rounded-3xl transition-all duration-500
+                            ${pkg.highlight 
+                              ? 'bg-white border-2 border-forest-200 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] z-10 lg:-translate-y-2' 
+                              : 'bg-white border border-forest-100/60 shadow-sm hover:shadow-xl hover:-translate-y-2 hover:border-forest-200/50'}
                           `}
                         >
                            {pkg.badge && (
@@ -391,11 +444,11 @@ const App: React.FC = () => {
                                {pkg.badge}
                              </span>
                            )}
-                           <h3 className="text-2xl font-serif text-forest-950 mb-3">{pkg.name}</h3>
+                           <h3 className="text-2xl font-sans font-bold tracking-tight text-forest-950 mb-3">{pkg.name}</h3>
                            <p className="text-sm text-forest-900/60 mb-8 leading-relaxed flex-grow">{pkg.description}</p>
                            
                            <ul className="space-y-3 mb-8">
-                              {pkg.features.slice(0, 3).map((f, i) => (
+                              {pkg.features.slice(0, 4).map((f, i) => (
                                 <li key={i} className="flex items-start gap-3 text-sm text-forest-900/80">
                                    <Check className="w-4 h-4 text-forest-500 shrink-0 mt-0.5" />
                                    {f}
@@ -403,17 +456,21 @@ const App: React.FC = () => {
                               ))}
                            </ul>
 
-                           <Button variant={pkg.highlight ? 'primary' : 'outline'} size="sm" className="w-full">
+                           <Button variant={pkg.highlight ? 'primary' : 'outline'} size="sm" className="w-full" onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}>
                               {pkg.cta}
                            </Button>
                         </div>
                      ))}
                   </div>
-                  {/* Mobile Swipe Hint */}
-                  <div className="flex md:hidden justify-center gap-1.5 mt-2">
-                    {SERVICE_PACKAGES.map((_, i) => (
-                      <div key={i} className={`h-1.5 rounded-full ${i === 0 ? 'w-6 bg-forest-900' : 'w-1.5 bg-forest-900/20'}`} />
-                    ))}
+                  
+                  <div className="mt-12 text-center">
+                    <p className="text-forest-900/80 text-lg mb-6">Ist Ihr Projekt nicht dabei? Fragen Sie mich einfach!</p>
+                    <Button 
+                      size="lg" 
+                      onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
+                    >
+                      Jetzt anfragen
+                    </Button>
                   </div>
                </div>
             </section>
@@ -421,7 +478,9 @@ const App: React.FC = () => {
             {/* --- GALLERY (Trust) --- */}
             <section id="gallery" className="py-16 md:py-32 bg-white">
                <div className="max-w-[1400px] mx-auto px-4 md:px-8">
-                  <h2 className="text-3xl md:text-5xl font-serif text-forest-950 mb-12 text-center">Einblicke</h2>
+                  <h2 className="text-3xl md:text-5xl font-sans font-bold tracking-tight text-forest-950 mb-12 text-center">
+                    Ein<span className="font-serif italic font-normal text-forest-700">blicke</span>
+                  </h2>
                   
                   {/* Animated Gallery Grid */}
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -468,16 +527,15 @@ const App: React.FC = () => {
                <div className="max-w-[1400px] mx-auto px-4 md:px-8">
                   <div className="max-w-2xl mb-16">
                      <span className="text-forest-300 text-xs font-bold uppercase tracking-widest mb-4 block">Der Ablauf</span>
-                     <h2 className="text-3xl md:text-5xl font-serif mb-6">Transparenz schafft Vertrauen.</h2>
-                     <p className="text-forest-100/60 text-lg font-light">
-                        Wir arbeiten nicht auf Zuruf, sondern mit System. So garantieren wir gleichbleibende Qualität.
-                     </p>
+                     <h2 className="text-3xl md:text-5xl font-sans font-bold tracking-tight mb-6">
+                       In 3 Schritten zu einem <span className="font-serif italic font-normal text-forest-300">gepflegten Grundstück.</span>
+                     </h2>
                   </div>
 
                   <div className="grid md:grid-cols-3 gap-12">
                      {PROCESS_STEPS.map((step, idx) => (
                         <div key={idx} className="relative">
-                           <div className="text-6xl font-serif text-forest-800 absolute -top-8 -left-4 -z-0 opacity-50 select-none">{step.step}</div>
+                           <div className="text-6xl font-serif italic text-forest-800 absolute -top-8 -left-4 -z-0 opacity-50 select-none">{step.step}</div>
                            <div className="relative z-10">
                               <h3 className="text-xl font-bold mb-4 flex items-center gap-3">
                                  {step.title}
@@ -495,26 +553,29 @@ const App: React.FC = () => {
             {/* --- TESTIMONIALS --- */}
             <section className="py-16 md:py-32 bg-white overflow-hidden">
                <div className="max-w-[1400px] mx-auto px-4 md:px-8">
-                  <h2 className="text-3xl md:text-5xl font-serif text-forest-950 mb-16 text-center">
-                    Was Kunden sagen
+                  <h2 className="text-3xl md:text-5xl font-sans font-bold tracking-tight text-forest-950 mb-16 text-center">
+                    Das sagen meine Kunden <br className="hidden md:block" />aus der <span className="font-serif italic font-normal text-forest-700">Nachbarschaft</span>
                   </h2>
                   
-                  <div className="flex flex-col md:flex-row gap-6">
-                     {/* Using the simple list for mobile, complex columns for desktop could be an enhancement later */}
-                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
-                        {TESTIMONIALS.slice(0, 3).map((t, i) => (
-                           <div key={i} className="bg-forest-50 p-8 rounded-2xl border border-forest-100/50">
-                              <div className="flex gap-1 text-emerald-500 mb-4">
-                                 {[1,2,3,4,5].map(s => <Star key={s} className="w-4 h-4 fill-current" />)}
-                              </div>
-                              <p className="text-forest-900/80 mb-6 italic text-sm leading-relaxed">"{t.quote}"</p>
-                              <div className="mt-auto">
-                                <p className="text-sm font-bold text-forest-950">{t.author}</p>
-                                <p className="text-xs text-forest-900/40 uppercase tracking-wider mt-1">{t.service}</p>
-                              </div>
+                  <div className="relative flex overflow-hidden w-full" style={{ WebkitMaskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)', maskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)' }}>
+                     <SmoothMarquee>
+                        {[...Array(2)].map((_, groupIdx) => (
+                           <div key={groupIdx} className="flex gap-6 pr-6">
+                              {TESTIMONIALS.map((t, i) => (
+                                 <div key={`${groupIdx}-${i}`} className="bg-forest-50 p-8 rounded-2xl border border-forest-100/50 w-[300px] md:w-[400px] flex-shrink-0 flex flex-col">
+                                    <div className="flex gap-1 text-emerald-500 mb-4">
+                                       {[1,2,3,4,5].map(s => <Star key={s} className="w-4 h-4 fill-current" />)}
+                                    </div>
+                                    <p className="text-forest-900/80 mb-6 italic text-sm leading-relaxed">"{t.quote}"</p>
+                                    <div className="mt-auto">
+                                      <p className="text-sm font-bold text-forest-950">{t.author}</p>
+                                      <p className="text-xs text-forest-900/40 uppercase tracking-wider mt-1">{t.service}</p>
+                                    </div>
+                                 </div>
+                              ))}
                            </div>
                         ))}
-                     </div>
+                     </SmoothMarquee>
                   </div>
                   
                   <div className="text-center mt-12">
@@ -530,19 +591,23 @@ const App: React.FC = () => {
                <div className="max-w-[1400px] mx-auto px-4 md:px-8">
                   <div className="grid lg:grid-cols-2 gap-16 mb-24">
                      <div>
-                        <h2 className="text-4xl md:text-6xl font-serif text-forest-950 mb-8">
-                           Bereit für <br/>Exzellenz?
+                        <h2 className="text-4xl md:text-6xl font-sans font-bold tracking-tight text-forest-950 mb-8">
+                           Lust auf einen Garten, <br/>der einfach <span className="font-serif italic font-normal text-forest-700">Freude macht?</span>
                         </h2>
                         <p className="text-lg text-forest-900/60 mb-10 max-w-md">
-                           Kontaktieren Sie uns für ein unverbindliches Erstgespräch. Wir prüfen Ihre Anforderungen und erstellen ein individuelles Konzept.
+                           Schreiben Sie mir direkt eine Nachricht oder rufen Sie mich an. Ich freue mich darauf, Ihr Projekt kennenzulernen!
                         </p>
                         
                         <div className="flex flex-col gap-4 mb-8">
-                           <a href="tel:017667580812" className="flex items-center gap-4 text-2xl md:text-3xl font-light hover:text-emerald-700 transition-colors">
-                              <Phone className="w-6 h-6 md:w-8 md:h-8" />
+                           <a href="https://wa.me/4917667580812" className="flex items-center justify-center sm:justify-start gap-3 px-8 py-4 bg-gradient-to-br from-[#25D366] to-[#1da851] text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 w-full sm:w-fit">
+                              <WhatsAppIcon className="w-6 h-6 text-white" />
+                              <span className="font-sans font-bold tracking-wide text-lg">WhatsApp Nachricht</span>
+                           </a>
+                           <a href="tel:017667580812" className="flex items-center gap-4 text-3xl md:text-4xl font-medium hover:text-emerald-700 transition-colors mt-4">
+                              <Phone className="w-8 h-8 md:w-10 md:h-10 text-forest-900" />
                               0176 / 675 808 12
                            </a>
-                           <a href="mailto:info@thomasrott.de" className="flex items-center gap-4 text-2xl md:text-3xl font-light hover:text-emerald-700 transition-colors">
+                           <a href="mailto:info@thomasrott.de" className="flex items-center gap-4 text-xl md:text-2xl font-medium hover:text-emerald-700 transition-colors text-forest-900/80">
                               <ArrowUpRight className="w-6 h-6 md:w-8 md:h-8" />
                               info@thomasrott.de
                            </a>
@@ -556,7 +621,7 @@ const App: React.FC = () => {
                      </div>
 
                      <div className="bg-forest-950 rounded-[2rem] p-8 md:p-12 text-white">
-                        <h3 className="text-2xl font-serif mb-8">Service-Gebiet</h3>
+                        <h3 className="text-2xl font-sans font-bold tracking-tight mb-8">Service-Gebiet</h3>
                         <div className="flex flex-wrap gap-3 mb-10">
                            {LOCATION_CITIES.slice(0, 10).map(city => (
                               <span key={city} className="px-3 py-1 bg-white/10 rounded-full text-sm">
@@ -579,6 +644,10 @@ const App: React.FC = () => {
                         <button onClick={() => handleLegalClick('agb')} className="hover:text-forest-900">AGB</button>
                      </div>
                      <p>© 2025 Thomas Rott. Qualität aus Bayern.</p>
+                     <a href="http://vamela.info" target="_blank" rel="noopener noreferrer" className="mt-4 md:mt-0 hover:text-forest-900 transition-colors flex items-center gap-1">
+                        <span>Designed by</span>
+                        <span className="font-bold text-forest-900">VAMELA</span>
+                     </a>
                   </div>
                </div>
             </footer>

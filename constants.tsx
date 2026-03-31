@@ -10,8 +10,12 @@ export const NAV_LINKS = [
 ];
 
 // COPYWRITING UPDATE: Kurz, prägnant, Premium-Anspruch.
-export const HERO_HEADLINE = "Perfektion für Ihre Immobilie.";
-export const HERO_SUBTEXT = "Ihr Partner für Gartenpflege und Objektbetreuung in München & Freising. Wir bieten keine einfachen Hausmeisterdienste, sondern Werterhalt durch Präzision. Zuverlässig. Diskret. Gründlich.";
+export const HERO_HEADLINE = (
+  <>
+    Ihr Garten & Haus in besten Händen – <span className="font-serif italic font-normal">direkt vom Profi.</span>
+  </>
+);
+export const HERO_SUBTEXT = "Hallo, ich bin Thomas Rott. Vergessen Sie unzuverlässige Großfirmen. Ich kümmere mich persönlich um die Pflege Ihrer Immobilie und Grünanlagen in Freising & Umgebung. Zuverlässig, sauber und mit Liebe zum Detail.";
 
 export const LOCATION_CITIES = [
   "Freising", "Erding", "Landshut", "München", "Moosburg", "Pfaffenhofen", "Dachau", 
@@ -23,65 +27,51 @@ export const LOCATION_CITIES = [
 
 export const SERVICE_PACKAGES: ServicePackage[] = [
   {
-    name: "Grünanlagenpflege",
-    category: "Ästhetik",
-    description: "Ihr Garten ist Ihre Visitenkarte. Wir sorgen für akkuraten Schnitt, unkrautfreie Beete und vitale Pflanzen.",
+    name: "Gartenpflege",
+    category: "Garten",
+    description: "Rasen mähen, Hecken schneiden, Unkraut entfernen. Ihr Garten, immer top gepflegt.",
     badge: "Kernkompetenz",
     features: [
-      "Rasen- & Gehölzpflege",
-      "Heckenschnitt (Formschnitt)",
-      "Beetpflege & Unkrautentfernung",
-      "Saisonale Bepflanzung"
+      "Rasen mähen & vertikutieren",
+      "Hecken & Sträucher schneiden",
+      "Unkraut entfernen",
+      "Laub rechen"
     ],
     cta: "Garten besprechen"
   },
   {
-    name: "Objektkontrolle",
-    category: "Sicherheit",
-    description: "Wir sind Ihre Augen vor Ort. Regelmäßige Begehungen und technische Prüfungen verhindern teure Folgeschäden.",
+    name: "Hausmeisterservice",
+    category: "Haus",
+    description: "Kleine Reparaturen, Instandhaltung, Mülltonnen-Service. Ich halte alles in Schuss.",
     features: [
-      "Wöchentliche Kontrollgänge",
-      "Funktionsprüfung Technik",
-      "Mängelerfassung & Report",
-      "Sofortige Kleinreparaturen"
+      "Kleine Reparaturen",
+      "Instandhaltung",
+      "Mülltonnen-Service",
+      "Leuchtmittelwechsel"
     ],
     cta: "Betreuung anfragen"
   },
   {
-    name: "Gebäudereinigung",
+    name: "Reinigungsarbeiten",
     category: "Sauberkeit",
-    description: "Reinigung auf Hotel-Niveau für Treppenhäuser und Gemeinschaftsflächen. Damit Sie sich wohlfühlen.",
+    description: "Treppenhaus, Hof, Terrassen. Strahlend sauber, ohne dass Sie einen Finger rühren müssen.",
     features: [
       "Treppenhausreinigung",
-      "Glas- & Fensterreinigung",
-      "Bodenpflege & Versiegelung",
-      "Hygienekonzepte"
+      "Hof- & Wegereinigung",
+      "Terrassenreinigung",
+      "Fensterreinigung"
     ],
     cta: "Angebot einholen"
   },
   {
-    name: "Fassadenreinigung",
-    category: "Werterhalt",
-    description: "Lassen Sie Ihr Gebäude wieder strahlen. Schonende Entfernung von Algen und Moos für langfristigen Schutz.",
-    highlight: true, // Styling for "New/Special"
-    badge: "Spezialität",
-    features: [
-      "Schonende Verfahren",
-      "Algen- & Moosentfernung",
-      "Langzeitschutz",
-      "Sofortige Wertsteigerung"
-    ],
-    cta: "Beratung anfordern"
-  },
-  {
     name: "Winterdienst",
-    category: "Pflicht",
-    description: "Schlafen Sie entspannt aus. Wir übernehmen die Räum- und Streupflicht gemäß Gemeindesatzung.",
+    category: "Sicherheit",
+    description: "Sichere und schneefreie Wege, wenn Sie noch schlafen.",
     features: [
-      "Räumung nach Satzung",
+      "Schneeräumen",
+      "Streudienst",
       "Eisglättebekämpfung",
-      "Haftungsübernahme",
-      "24/7 Bereitschaft"
+      "Zuverlässig & früh"
     ],
     cta: "Kapazität prüfen"
   }
@@ -93,12 +83,6 @@ export const GALLERY_IMAGES: GalleryItem[] = [
     alt: "Präzise Heckenpflege",
     title: "Formschnitt in Perfektion",
     category: "Gartenpflege"
-  },
-  {
-    src: "https://i.postimg.cc/jqcqHjMd/Whats-App-Image-2025-12-21-at-15-45-22.jpg",
-    alt: "Arbeit am Objekt",
-    title: "Einsatz vor Ort",
-    category: "Objektbetreuung"
   },
   {
     src: "https://www.my-hammer.de/images/sp/original/7e1c9b79-5161-4acf-953c-38b57a421414.jpg",
@@ -238,26 +222,32 @@ export const GALLERY_IMAGES: GalleryItem[] = [
     alt: "Detailarbeit",
     title: "Feinschliff",
     category: "Gartenpflege"
+  },
+  {
+    src: "https://i.postimg.cc/jqcqHjMd/Whats-App-Image-2025-12-21-at-15-45-22.jpg",
+    alt: "Arbeit am Objekt",
+    title: "Einsatz vor Ort",
+    category: "Objektbetreuung"
   }
 ];
 
 export const PROCESS_STEPS: ProcessStep[] = [
   { 
     step: '01', 
-    title: 'Analyse', 
-    desc: 'Ich komme persönlich vorbei. Wir analysieren den Ist-Zustand Ihres Objekts und definieren Ihre Ziele.',
+    title: '1. Kostenlose Besichtigung', 
+    desc: 'Ich komme vorbei und schaue mir an, was gemacht werden muss.',
     icon: Phone
   },
   { 
     step: '02', 
-    title: 'Konzept', 
-    desc: 'Sie erhalten ein transparentes Leistungsverzeichnis. Keine versteckten Kosten, sondern klare Ergebnisse.',
+    title: '2. Faires Angebot', 
+    desc: 'Sie bekommen einen transparenten Preis ohne versteckte Kosten.',
     icon: Calendar
   },
   { 
     step: '03', 
-    title: 'Umsetzung', 
-    desc: 'Mein Team und ich übernehmen ab Tag 1 die Verantwortung. Sie genießen das Ergebnis.',
+    title: '3. Zurücklehnen', 
+    desc: 'Ich kümmere mich zuverlässig um die Arbeit – und Sie genießen das Ergebnis.',
     icon: ClipboardCheck
   }
 ];

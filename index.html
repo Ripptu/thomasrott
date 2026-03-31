@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+    <link rel="icon" type="image/png" href="https://i.postimg.cc/pTPCtyfc/Logo-neu.png" />
     
     <!-- Primary SEO -->
     <title>Thomas Rott | Premium Objektbetreuung, Gartenpflege & Fassadenreinigung</title>
@@ -133,15 +134,14 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- Replaced Inter with Manrope for better readability and modern aesthetic -->
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Manrope:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
     <script>
       tailwind.config = {
         theme: {
           extend: {
             fontFamily: {
-              sans: ['Manrope', 'sans-serif'], // Changed to Manrope
-              serif: ['Playfair Display', 'serif'],
+              sans: ['Helvetica', 'Arial', 'sans-serif'],
+              serif: ['"Instrument Serif"', 'serif'],
             },
             colors: {
               forest: {
@@ -166,6 +166,7 @@
               'float': 'float 6s ease-in-out infinite',
               'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
               'fade-up': 'fadeUp 0.8s ease-out forwards',
+              'marquee': 'marquee 40s linear infinite',
             },
             keyframes: {
               float: {
@@ -175,6 +176,10 @@
               fadeUp: {
                 '0%': { opacity: '0', transform: 'translateY(20px)' },
                 '100%': { opacity: '1', transform: 'translateY(0)' },
+              },
+              marquee: {
+                '0%': { transform: 'translateX(0%)' },
+                '100%': { transform: 'translateX(-50%)' },
               }
             }
           },
@@ -246,6 +251,7 @@
   }
 }
 </script>
+<link rel="stylesheet" href="/index.css">
 </head>
   <body>
     <div id="root"></div>
@@ -254,5 +260,6 @@
     <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollTrigger.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollSmoother.min.js"></script>
-  </body>
+  <script type="module" src="/index.tsx"></script>
+</body>
 </html>
