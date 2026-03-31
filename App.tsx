@@ -261,36 +261,53 @@ const App: React.FC = () => {
             {/* Mobile Menu Toggle */}
             <button 
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden p-2 text-forest-950"
+              className="md:hidden p-2 relative z-[60] text-forest-950 transition-transform duration-300"
               aria-label="Menü"
             >
-              {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {isMenuOpen ? <X className="w-7 h-7" /> : <Menu className="w-6 h-6" />}
             </button>
         </div>
 
-        {/* Mobile Menu Dropdown */}
-        {isMenuOpen && (
-          <div className="absolute top-full left-0 w-full bg-white border-b border-gray-100 shadow-xl p-4 flex flex-col gap-4 md:hidden">
-            {NAV_LINKS.map(link => (
-              <a 
-                key={link.label} 
-                href={link.href}
-                onClick={(e) => handleNavClick(e, link.href)}
-                className="text-lg font-medium text-forest-950 py-2 border-b border-gray-50 last:border-0"
+        {/* Mobile Menu Fullscreen Overlay */}
+        <AnimatePresence>
+          {isMenuOpen && (
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.4, ease: "easeInOut" }}
+              className="fixed inset-0 z-[55] bg-white/95 backdrop-blur-md text-forest-950 flex flex-col justify-center items-center md:hidden h-[100dvh]"
+            >
+              <div className="flex flex-col gap-8 items-center text-center w-full px-8">
+                {NAV_LINKS.map((link, idx) => (
+                  <motion.a 
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 + idx * 0.1, duration: 0.5, ease: "easeOut" }}
+                    key={link.label} 
+                    href={link.href}
+                    onClick={(e) => handleNavClick(e, link.href)}
+                    className="text-3xl sm:text-4xl font-light tracking-wide text-forest-900 hover:text-forest-600 transition-colors"
+                  >
+                    {link.label}
+                  </motion.a>
+                ))}
+              </div>
+
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5, duration: 0.5 }}
+                className="flex gap-8 mt-16 justify-center items-center text-forest-900/60"
               >
-                {link.label}
-              </a>
-            ))}
-            <div className="flex gap-4 pt-4 justify-center items-center">
-               <a href="#" className="p-3 bg-forest-50 rounded-full text-forest-900 hover:text-forest-700 transition-colors"><InstagramIcon className="w-5 h-5"/></a>
-               <a href="#" className="p-3 bg-forest-50 rounded-full text-forest-900 hover:text-forest-700 transition-colors"><FacebookIcon className="w-5 h-5"/></a>
-            </div>
-            <div className="flex gap-4 pt-2 justify-center">
-              <a href="https://wa.me/4917667580812" className="p-3 bg-forest-50 rounded-full text-forest-900"><WhatsAppIcon className="w-5 h-5"/></a>
-              <a href="tel:017667580812" className="p-3 bg-forest-50 rounded-full text-forest-900"><Phone className="w-5 h-5"/></a>
-            </div>
-          </div>
-        )}
+                 <a href="#" className="hover:text-forest-900 transition-colors"><InstagramIcon className="w-6 h-6"/></a>
+                 <a href="#" className="hover:text-forest-900 transition-colors"><FacebookIcon className="w-6 h-6"/></a>
+                 <a href="https://wa.me/4917667580812" className="hover:text-forest-900 transition-colors"><WhatsAppIcon className="w-6 h-6"/></a>
+                 <a href="tel:017667580812" className="hover:text-forest-900 transition-colors"><Phone className="w-6 h-6"/></a>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </header>
 
       <main>
