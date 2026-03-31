@@ -324,7 +324,7 @@ const App: React.FC = () => {
                   <img 
                     src="https://i.postimg.cc/pTPCtyfc/Logo-neu.png" 
                     alt="Thomas Rott Logo" 
-                    className="w-full max-w-[180px] md:max-w-[240px] h-auto mb-8 animate-fade-up mx-auto"
+                    className="w-full max-w-[250px] md:max-w-[350px] lg:max-w-[400px] h-auto mb-8 animate-fade-up mx-auto"
                     style={{ animationDelay: '0.0s' }}
                   />
 
