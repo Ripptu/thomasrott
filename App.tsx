@@ -227,15 +227,15 @@ const App: React.FC = () => {
       <header 
         className={`
           fixed top-0 left-0 right-0 z-[90] px-4 md:px-8 py-4 transition-all duration-300 ease-in-out transform
-          ${scrolled ? 'bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-100/50' : 'bg-transparent'}
+          ${scrolled ? 'bg-white/95 backdrop-blur-md' : 'bg-transparent'}
           ${isVisible ? 'translate-y-0' : '-translate-y-full'}
         `}
       >
-        <div className="max-w-[1400px] mx-auto flex items-center justify-end">
+        <div className="max-w-[1400px] mx-auto flex items-center justify-end relative">
             {/* Logo REMOVED from Navbar as requested */}
             
-            {/* Desktop Nav */}
-            <nav className="hidden md:flex items-center gap-8">
+            {/* Desktop Nav Links (Centered) */}
+            <nav className="hidden md:flex items-center gap-8 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
               {NAV_LINKS.map(link => (
                 <a 
                   key={link.label} 
@@ -246,6 +246,10 @@ const App: React.FC = () => {
                   {link.label}
                 </a>
               ))}
+            </nav>
+
+            {/* Desktop CTA (Right) */}
+            <div className="hidden md:block">
               <Button 
                 variant="primary" 
                 size="sm" 
@@ -256,7 +260,7 @@ const App: React.FC = () => {
               >
                 Erstgespräch
               </Button>
-            </nav>
+            </div>
 
             {/* Mobile Menu Toggle */}
             <button 
