@@ -74,6 +74,31 @@ export const SERVICE_PACKAGES: ServicePackage[] = [
       "Zuverlässig & früh"
     ],
     cta: "Kapazität prüfen"
+  },
+  {
+    name: "Erdarbeiten",
+    category: "Bau & Garten",
+    description: "Professionelle Baggerarbeiten, Aushub und Planierungen für Ihre Projekte.",
+    features: [
+      "Baggerarbeiten",
+      "Boden planieren",
+      "Grabenaushub",
+      "Materialtransport"
+    ],
+    cta: "Projekt besprechen"
+  },
+  {
+    name: "Fundamente für Wärmepumpen",
+    category: "Bau",
+    description: "Exakte und normgerechte Fundamentarbeiten für die sichere Aufstellung von Wärmepumpen.",
+    features: [
+      "Erdaushub",
+      "Schotterbett & Frostschutz",
+      "Betonieren & Glätten",
+      "Kernbohrung",
+      "Leitung reinlegen"
+    ],
+    cta: "Fundament anfragen"
   }
 ];
 
