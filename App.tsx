@@ -1015,11 +1015,7 @@ const App: React.FC = () => {
             className="fixed inset-0 z-[120] bg-black/95 backdrop-blur-xl flex flex-col justify-between p-4 md:p-8"
           >
              {/* Header */}
-             <div className="flex justify-between items-center w-full max-w-7xl mx-auto z-10 pt-2 text-white">
-                <div>
-                   <span className="text-xs uppercase tracking-widest text-emerald-400 font-bold">{GALLERY_IMAGES[activeLightboxIndex].category}</span>
-                   <h3 className="text-lg md:text-xl font-sans font-bold tracking-tight text-white/90 mt-0.5">{GALLERY_IMAGES[activeLightboxIndex].title}</h3>
-                </div>
+             <div className="flex justify-end items-center w-full max-w-7xl mx-auto z-10 pt-2 text-white">
                 <button 
                   onClick={() => setActiveLightboxIndex(null)}
                   className="p-3 bg-white/10 hover:bg-white/20 transition-colors rounded-full text-white cursor-pointer"
