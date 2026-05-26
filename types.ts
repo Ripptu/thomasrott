@@ -38,3 +38,8 @@ export interface GalleryItem {
   title: string;
   category: string;
 }
+
+export interface FAQItem {
+  question: string;
+  answer: string;
+}

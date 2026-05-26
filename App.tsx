@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { 
-  Menu, X, Check, ArrowRight, ArrowLeft, Phone, Star, ArrowUpRight, MapPin, Camera, MessageCircle, Clipboard, ChevronDown
+  Menu, X, Check, ArrowRight, ArrowLeft, Phone, Star, ArrowUpRight, MapPin, Camera, MessageCircle, Clipboard, ChevronDown, ChevronUp
 } from 'lucide-react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
-import { NAV_LINKS, HERO_HEADLINE, HERO_SUBTEXT, SERVICE_PACKAGES, PROCESS_STEPS, LOCATION_CITIES, GALLERY_IMAGES, TESTIMONIALS } from './constants.tsx';
+import { NAV_LINKS, HERO_HEADLINE, HERO_SUBTEXT, SERVICE_PACKAGES, PROCESS_STEPS, LOCATION_CITIES, GALLERY_IMAGES, TESTIMONIALS, FAQ_ITEMS } from './constants.tsx';
 import { Button } from './components/Button.tsx';
 import { InstagramIcon, FacebookIcon, WhatsAppIcon } from './components/SocialIcons.tsx';
 import { LegalView } from './components/LegalView.tsx';
@@ -65,6 +65,43 @@ const SmoothMarquee = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
+const FAQAccordionItem = ({ question, answer }: { question: string; answer: string }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  return (
+    <div className="border-b border-forest-100/30 pb-4">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full flex justify-between items-center text-left py-4 text-forest-950 hover:text-forest-700 transition-colors focus:outline-none"
+        aria-expanded={isOpen}
+      >
+        <span className="text-lg md:text-xl font-sans font-semibold tracking-tight pr-4 text-forest-900">{question}</span>
+        <motion.div
+          animate={{ rotate: isOpen ? 180 : 0 }}
+          transition={{ duration: 0.25, ease: "easeInOut" }}
+          className="p-1.5 rounded-full bg-forest-50 text-forest-900 shrink-0"
+        >
+          <ChevronDown className="w-5 h-5" />
+        </motion.div>
+      </button>
+      <AnimatePresence initial={false}>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.25, ease: "easeInOut" }}
+            className="overflow-hidden"
+          >
+            <p className="text-base text-forest-900/70 leading-relaxed pt-1 pb-4">
+              {answer}
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
 const App: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -73,7 +110,76 @@ const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<ViewState>('home');
   const [visibleGalleryCount, setVisibleGalleryCount] = useState(6); // Initial gallery count
   
+  // Interactive Service Area State
+  const [areaSearchQuery, setAreaSearchQuery] = useState('');
+  const [areaSearchResult, setAreaSearchResult] = useState<{ found: boolean; city: string } | null>(null);
+
+  // WhatsApp Custom Builder State
+  const [whatsappName, setWhatsappName] = useState('');
+  const [whatsappCity, setWhatsappCity] = useState('');
+  const [whatsappService, setWhatsappService] = useState('Garten- & Heckenpflege');
+
+  // New High-End Premium States
+  const [activeLightboxIndex, setActiveLightboxIndex] = useState<number | null>(null);
+  const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<'All' | 'Garten' | 'Haus' | 'Spezial'>('All');
+  const [activeTickerCity, setActiveTickerCity] = useState(LOCATION_CITIES[0]);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  // Live Active Ticker Rotator
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveTickerCity(prev => {
+        const currentIndex = LOCATION_CITIES.indexOf(prev);
+        const nextIndex = (currentIndex + 1) % LOCATION_CITIES.length;
+        return LOCATION_CITIES[nextIndex];
+      });
+    }, 6500);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Scroll to Top visibility
+  useEffect(() => {
+    const checkScrollTop = () => {
+      if (window.scrollY > 400) {
+        setShowScrollTop(true);
+      } else {
+        setShowScrollTop(false);
+      }
+    };
+    window.addEventListener('scroll', checkScrollTop, { passive: true });
+    return () => window.removeEventListener('scroll', checkScrollTop);
+  }, []);
+
+  const handleAreaSearch = (query: string) => {
+    setAreaSearchQuery(query);
+    if (!query.trim()) {
+      setAreaSearchResult(null);
+      return;
+    }
+    const cleanQuery = query.toLowerCase().trim();
+    const foundCity = LOCATION_CITIES.find(c => c.toLowerCase().includes(cleanQuery));
+    if (foundCity) {
+      setAreaSearchResult({ found: true, city: foundCity });
+    } else {
+      setAreaSearchResult({ found: false, city: query });
+    }
+  };
+
+  // Dynamic Page Title & Meta description adjustment for premium SEO
+  useEffect(() => {
+    if (currentView === 'home') {
+      document.title = "Thomas Rott | Premium Objektbetreuung, Gartenpflege & Fassadenreinigung";
+    } else if (currentView === 'impressum') {
+      document.title = "Impressum | Thomas Rott Premium Objektbetreuung";
+    } else if (currentView === 'agb') {
+      document.title = "Allgemeine Geschäftsbedingungen (AGB) | Thomas Rott";
+    } else if (currentView === 'datenschutz') {
+      document.title = "Datenschutzerklärung | Thomas Rott Premium Objektbetreuung";
+    }
+  }, [currentView]);
+  
   // Refs for animations and scroll tracking
+  const { scrollYProgress } = useScroll();
   const galleryScrollRef = useRef<HTMLDivElement>(null);
   const servicesScrollRef = useRef<HTMLDivElement>(null);
   const lastScrollY = useRef(0); // Track last scroll position
@@ -149,6 +255,9 @@ const App: React.FC = () => {
   const handleShowMoreGallery = () => {
     setVisibleGalleryCount(prev => Math.min(prev + 6, GALLERY_IMAGES.length));
   };
+
+  const whatsappMsgText = `Servus Thomas, ich bin's, ${whatsappName || '[Ihr Name]'}${whatsappCity ? ` aus ${whatsappCity}` : ''}. Ich hätte eine Anfrage wegen: *${whatsappService}*. Hast du demnächst Zeit für ein kurzes Telefonat oder Kennenlernen vor Ort?`;
+  const whatsappMsgUrl = `https://wa.me/4917667580812?text=${encodeURIComponent(whatsappMsgText)}`;
 
   return (
     <div className="bg-white font-sans text-forest-950 selection:bg-forest-900 selection:text-white pb-20 md:pb-0">
@@ -227,10 +336,16 @@ const App: React.FC = () => {
       <header 
         className={`
           fixed top-0 left-0 right-0 z-[90] px-4 md:px-8 py-4 transition-all duration-300 ease-in-out transform
-          ${scrolled ? 'bg-white/95 backdrop-blur-md' : 'bg-transparent'}
+          ${scrolled ? 'bg-white/95 backdrop-blur-md shadow-[0_2px_20px_rgba(0,0,0,0.03)]' : 'bg-transparent'}
           ${isVisible ? 'translate-y-0' : '-translate-y-full'}
         `}
       >
+        {/* Elite Scroll Progress Indicator */}
+        <motion.div 
+           style={{ scaleX: scrollYProgress }} 
+           className="absolute bottom-0 left-0 right-0 h-[3px] bg-gradient-to-r from-emerald-500 to-forest-700 origin-left z-20"
+        />
+
         <div className="max-w-[1400px] mx-auto flex items-center justify-end relative">
             {/* Logo REMOVED from Navbar as requested */}
             
@@ -331,6 +446,20 @@ const App: React.FC = () => {
                     className="w-full max-w-[250px] md:max-w-[350px] lg:max-w-[400px] h-auto mb-8 animate-fade-up mx-auto"
                     style={{ animationDelay: '0.0s' }}
                   />
+
+                  {/* High Quality Live Active Ticker Badge */}
+                  <motion.div 
+                     initial={{ opacity: 0, scale: 0.95 }}
+                     animate={{ opacity: 1, scale: 1 }}
+                     transition={{ delay: 0.4, duration: 0.5 }}
+                     className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-500/5 hover:bg-emerald-500/10 border border-emerald-500/20 rounded-full mb-8 text-emerald-800 text-xs font-semibold tracking-wide shadow-sm"
+                  >
+                     <span className="relative flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                     </span>
+                     <span>Heute im Raum <span className="underline decoration-emerald-500/30 font-bold">{activeTickerCity}</span> &amp; Umgebung im Einsatz</span>
+                  </motion.div>
 
                   {/* Headline */}
                   <h1 
@@ -440,17 +569,60 @@ const App: React.FC = () => {
             {/* --- SERVICES (Swipeable on Mobile) --- */}
             <section id="services" className="py-16 md:py-32 bg-slate-50">
                <div className="max-w-[1400px] mx-auto px-4 md:px-8">
-                  <div className="flex justify-between items-end mb-10 md:mb-16">
+                  <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-10 md:mb-16">
                      <div>
-                       <h2 className="text-3xl md:text-5xl font-sans font-bold tracking-tight text-forest-950 mb-4">
+                       <h2 className="text-3xl md:text-5xl font-sans font-bold tracking-tight text-forest-950 mb-3">
                          Leistungs<span className="font-serif italic font-normal text-forest-700">spektrum</span>
                        </h2>
+                       <p className="text-forest-900/60 text-sm md:text-base">Filterbare Services für Garten, Haus und Baggerarbeiten.</p>
+                     </div>
+
+                     {/* Dynamic Tab Filter */}
+                     <div className="flex flex-wrap gap-2.5 bg-white/60 backdrop-blur-sm border border-forest-100/40 p-1.5 rounded-full shadow-sm max-w-full overflow-x-auto">
+                        {[
+                           { id: 'All', label: 'Alle' },
+                           { id: 'Garten', label: 'Garten & Hecken' },
+                           { id: 'Haus', label: 'Haus & Reinigung' },
+                           { id: 'Spezial', label: 'Bagger & Winter' }
+                        ].map((tab) => {
+                           const isActive = selectedCategoryFilter === tab.id;
+                           return (
+                              <button
+                                 key={tab.id}
+                                 onClick={() => setSelectedCategoryFilter(tab.id as any)}
+                                 className={`relative px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-colors duration-300 ${
+                                    isActive ? 'text-white font-semibold' : 'text-forest-900/60 hover:text-forest-900'
+                                 } cursor-pointer min-w-fit`}
+                              >
+                                 {isActive && (
+                                    <motion.span 
+                                       layoutId="activeCategoryTab"
+                                       className="absolute inset-0 bg-forest-900 rounded-full"
+                                       transition={{ type: "spring", stiffness: 350, damping: 28 }}
+                                    />
+                                 )}
+                                 <span className="relative z-10">{tab.label}</span>
+                              </button>
+                           );
+                        })}
                      </div>
                   </div>
 
                   {/* Grid Container for Desktop & Mobile */}
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8 pb-8 md:pb-0">
-                     {SERVICE_PACKAGES.map((pkg, idx) => (
+                     {SERVICE_PACKAGES.filter(pkg => {
+                        if (selectedCategoryFilter === 'All') return true;
+                        if (selectedCategoryFilter === 'Garten') {
+                          return pkg.category === 'Garten' || pkg.category === 'Bau & Garten';
+                        }
+                        if (selectedCategoryFilter === 'Haus') {
+                          return pkg.category === 'Haus' || pkg.category === 'Sauberkeit';
+                        }
+                        if (selectedCategoryFilter === 'Spezial') {
+                          return pkg.category === 'Sicherheit' || pkg.category === 'Bau';
+                        }
+                        return true;
+                     }).map((pkg, idx) => (
                         <div 
                           key={idx}
                           className={`
@@ -518,10 +690,14 @@ const App: React.FC = () => {
                               <img 
                                 src={img.src} 
                                 alt={img.alt} 
-                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 cursor-zoom-in" onClick={() => setActiveLightboxIndex(idx)}
                                 loading="lazy"
                               />
-                              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
+                              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-500 flex items-center justify-center pointer-events-none cursor-zoom-in" onClick={() => setActiveLightboxIndex(idx)}>
+                                 <span className="px-5 py-2.5 bg-white/10 backdrop-blur-md text-white text-[11px] font-bold uppercase tracking-wider rounded-full border border-white/25 transform scale-90 group-hover:scale-100 opacity-0 group-hover:opacity-100 transition-all duration-500 shadow-md">
+                                    🔍 Vergrößern
+                                 </span>
+                              </div>
                            </motion.div>
                         ))}
                      </AnimatePresence>
@@ -607,6 +783,24 @@ const App: React.FC = () => {
                </div>
             </section>
 
+            {/* --- FAQ SECTION (High-End SEO & Trust) --- */}
+            <section className="py-16 md:py-28 bg-forest-50/20 border-t border-b border-forest-100/40">
+               <div className="max-w-4xl mx-auto px-4 md:px-8">
+                  <div className="text-center mb-16">
+                     <span className="text-forest-600 text-xs font-bold uppercase tracking-widest mb-3 block">Häufig gestellte Fragen</span>
+                     <h2 className="text-3xl md:text-5xl font-sans font-bold tracking-tight text-forest-950">
+                       Haben Sie Fragen? <span className="font-serif italic font-normal text-forest-700">Antworten</span> direkt vom Profi.
+                     </h2>
+                  </div>
+                  
+                  <div className="space-y-4">
+                     {FAQ_ITEMS.map((faq, idx) => (
+                        <FAQAccordionItem key={idx} question={faq.question} answer={faq.answer} />
+                     ))}
+                  </div>
+               </div>
+            </section>
+
             {/* --- CONTACT / FOOTER --- */}
             <footer id="contact" className="bg-white pt-16 md:pt-32 pb-32 md:pb-12 border-t border-forest-100">
                <div className="max-w-[1400px] mx-auto px-4 md:px-8">
@@ -618,18 +812,86 @@ const App: React.FC = () => {
                         <p className="text-lg text-forest-900/60 mb-10 max-w-md">
                            Schreiben Sie mir direkt eine Nachricht oder rufen Sie mich an. Ich freue mich darauf, Ihr Projekt kennenzulernen!
                         </p>
-                        
-                        <div className="flex flex-col gap-4 mb-8">
-                           <a href="https://wa.me/4917667580812" className="flex items-center justify-center sm:justify-start gap-3 px-8 py-4 bg-gradient-to-br from-[#25D366] to-[#1da851] text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 w-full sm:w-fit">
-                              <WhatsAppIcon className="w-6 h-6 text-white" />
-                              <span className="font-sans font-bold tracking-wide text-lg">WhatsApp Nachricht</span>
+
+                        {/* --- LIGHTWEIGHT INTERACTIVE WHATSAPP BUILDER --- */}
+                        <div className="bg-forest-50 p-6 md:p-8 rounded-[2rem] border border-forest-100/50 mb-10 max-w-lg shadow-sm">
+                           <h3 className="text-xl font-sans font-semibold tracking-tight text-forest-950 mb-2 flex items-center gap-2.5">
+                              <MessageCircle className="w-5 h-5 text-emerald-600 animate-pulse" />
+                              Express-Anfrage per WhatsApp
+                           </h3>
+                           <p className="text-sm text-forest-900/60 mb-6 font-normal">
+                              Tragen Sie kurz Ihre Daten ein, um eine perfekt ausformulierte Nachricht direkt an mich zu senden:
+                           </p>
+                           
+                           <div className="space-y-4 mb-6">
+                              <div className="grid grid-cols-2 gap-4">
+                                 <div>
+                                    <label className="block text-xs uppercase tracking-wider font-semibold text-forest-900/60 mb-1.5" htmlFor="whatsappName">Ihr Name</label>
+                                    <input 
+                                       type="text"
+                                       id="whatsappName"
+                                       value={whatsappName}
+                                       onChange={(e) => setWhatsappName(e.target.value)}
+                                       placeholder="Name..."
+                                       className="w-full bg-white border border-forest-100/60 rounded-xl px-4 py-2.5 text-sm text-forest-950 placeholder-forest-900/30 focus:outline-none focus:border-forest-600 focus:ring-1 focus:ring-forest-600 transition-colors"
+                                    />
+                                 </div>
+                                 <div>
+                                    <label className="block text-xs uppercase tracking-wider font-semibold text-forest-900/60 mb-1.5" htmlFor="whatsappCity">Wohnort</label>
+                                    <input 
+                                       type="text"
+                                       id="whatsappCity"
+                                       value={whatsappCity}
+                                       onChange={(e) => setWhatsappCity(e.target.value)}
+                                       placeholder="Freising..."
+                                       className="w-full bg-white border border-forest-100/60 rounded-xl px-4 py-2.5 text-sm text-forest-950 placeholder-forest-900/30 focus:outline-none focus:border-forest-600 focus:ring-1 focus:ring-forest-600 transition-colors"
+                                    />
+                                 </div>
+                              </div>
+                              <div>
+                                 <label className="block text-xs uppercase tracking-wider font-semibold text-forest-900/60 mb-1.5" htmlFor="whatsappService">Gewünschte Dienstleistung</label>
+                                 <select
+                                    id="whatsappService"
+                                    value={whatsappService}
+                                    onChange={(e) => setWhatsappService(e.target.value)}
+                                    className="w-full bg-white border border-forest-100/60 rounded-xl px-4 py-2.5 text-sm text-forest-950 focus:outline-none focus:border-forest-600 focus:ring-1 focus:ring-forest-600 transition-colors"
+                                 >
+                                    {SERVICE_PACKAGES.map(pkg => (
+                                       <option key={pkg.name} value={pkg.name}>{pkg.name}</option>
+                                    ))}
+                                    <option value="Anderes Anliegen">Sonstiges / Anderes Anliegen</option>
+                                 </select>
+                               </div>
+                           </div>
+
+                           {/* Live Message Preview */}
+                           <div className="bg-emerald-500/5 border border-emerald-500/10 rounded-xl p-4 mb-6">
+                              <p className="text-[10px] uppercase tracking-wider font-semibold text-emerald-800 mb-1.5 text-left">Vorschau Ihrer Nachricht:</p>
+                              <p className="text-xs text-forest-900/70 italic leading-relaxed text-left">
+                                 "Servus Thomas, ich bin's, <span className={whatsappName ? "text-emerald-700 font-semibold" : "text-forest-900/30 font-medium"}>{whatsappName || "[Ihr Name]"}</span>
+                                 {whatsappCity ? <> aus <span className="text-emerald-700 font-semibold">{whatsappCity}</span></> : <> aus [Wohnort]</>}. Ich hätte eine Anfrage wegen: <span className="text-emerald-700 font-semibold font-sans">*{whatsappService}*</span>. Hast du demnächst Zeit...?"
+                              </p>
+                           </div>
+
+                           <a 
+                              href={whatsappMsgUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="w-full flex items-center justify-center gap-2.5 px-6 py-3.5 bg-gradient-to-br from-[#25D366] to-[#1da851] text-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5"
+                           >
+                              <WhatsAppIcon className="w-5 h-5 text-white animate-bounce" />
+                              <span className="font-sans font-bold text-sm tracking-wide">Nachricht über WhatsApp senden</span>
                            </a>
-                           <a href="tel:017667580812" className="flex items-center gap-4 text-3xl md:text-4xl font-medium hover:text-emerald-700 transition-colors mt-4">
-                              <Phone className="w-8 h-8 md:w-10 md:h-10 text-forest-900" />
+                        </div>
+
+                        <div className="flex flex-col gap-4 mb-8">
+                           <span className="text-xs uppercase tracking-wider font-bold text-forest-900/40 block">Direkt anrufen oder Mail senden:</span>
+                           <a href="tel:017667580812" className="flex items-center gap-4 text-3xl md:text-4xl font-semibold hover:text-emerald-700 transition-colors">
+                              <Phone className="w-7 h-7 md:w-9 md:h-9 text-forest-900 shrink-0" />
                               0176 / 675 808 12
                            </a>
-                           <a href="mailto:info@thomasrott.de" className="flex items-center gap-4 text-xl md:text-2xl font-medium hover:text-emerald-700 transition-colors text-forest-900/80">
-                              <ArrowUpRight className="w-6 h-6 md:w-8 md:h-8" />
+                           <a href="mailto:info@thomasrott.de" className="flex items-center gap-4 text-lg md:text-xl font-medium hover:text-emerald-700 transition-colors text-forest-900/80">
+                              <ArrowUpRight className="w-5 h-5 md:w-6 md:h-6 shrink-0" />
                               info@thomasrott.de
                            </a>
                         </div>
@@ -641,19 +903,78 @@ const App: React.FC = () => {
                         </div>
                      </div>
 
-                     <div className="bg-forest-950 rounded-[2rem] p-8 md:p-12 text-white">
-                        <h3 className="text-2xl font-sans font-bold tracking-tight mb-8">Service-Gebiet</h3>
-                        <div className="flex flex-wrap gap-3 mb-10">
-                           {LOCATION_CITIES.slice(0, 10).map(city => (
-                              <span key={city} className="px-3 py-1 bg-white/10 rounded-full text-sm">
-                                 {city}
-                              </span>
-                           ))}
-                           <span className="px-3 py-1 bg-white/10 rounded-full text-sm italic">+ Umgebung</span>
+                     <div className="bg-forest-950 rounded-[2rem] p-8 md:p-12 text-white flex flex-col justify-between">
+                        <div>
+                           <h3 className="text-2xl font-sans font-bold tracking-tight mb-4">Einzugsgebiet</h3>
+                           <p className="text-sm text-white/60 mb-8 leading-relaxed">
+                              Prüfen Sie sofort, ob wir in Ihrer Gemeinde oder Ihrem Landkreis aktiv sind:
+                           </p>
+                           
+                           {/* Interactive Area Checker */}
+                           <div className="mb-8 relative z-10">
+                              <div className="relative">
+                                 <input 
+                                    type="text"
+                                    value={areaSearchQuery}
+                                    onChange={(e) => handleAreaSearch(e.target.value)}
+                                    placeholder="Ort oder PLZ eingeben..."
+                                    className="w-full bg-white/10 border border-white/20 rounded-xl px-5 py-3 pr-10 text-white placeholder-white/40 focus:outline-none focus:border-forest-400 transition-colors"
+                                 />
+                                 <MapPin className="absolute right-3.5 top-3.5 w-5 h-5 text-white/40" />
+                              </div>
+                              
+                              {/* Realtime Feedback Card */}
+                              <AnimatePresence>
+                                 {areaSearchResult && (
+                                    <motion.div 
+                                       initial={{ opacity: 0, y: -10 }}
+                                       animate={{ opacity: 1, y: 0 }}
+                                       exit={{ opacity: 0, y: -10 }}
+                                       className={`mt-4 p-4 rounded-xl border ${
+                                          areaSearchResult.found 
+                                             ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300' 
+                                             : 'bg-white/5 border-white/10 text-white/80'
+                                       }`}
+                                    >
+                                       <div className="flex items-start gap-3">
+                                          {areaSearchResult.found ? (
+                                             <>
+                                                <Check className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+                                                <div>
+                                                   <p className="font-bold text-sm">Ja, wir sind in {areaSearchResult.city} aktiv!</p>
+                                                   <p className="text-xs text-emerald-300/80 mt-0.5">Sichern Sie sich ein unverbindliches Erstgespräch vor Ort.</p>
+                                                </div>
+                                             </>
+                                          ) : (
+                                             <>
+                                                <MapPin className="w-5 h-5 text-white/60 shrink-0 mt-0.5" />
+                                                <div>
+                                                   <p className="font-bold text-sm">„{areaSearchResult.city}“ nicht explizit gelistet?</p>
+                                                   <p className="text-xs text-white/60 mt-0.5">Fragen Sie einfach per WhatsApp oder Telefon an – oft übernehmen wir angrenzende Orte!</p>
+                                                </div>
+                                             </>
+                                          )}
+                                       </div>
+                                    </motion.div>
+                                 )}
+                              </AnimatePresence>
+                           </div>
+
+                           <p className="text-xs text-white/40 mb-3 uppercase tracking-wider font-semibold">Auszug aus den Einsatzorten:</p>
+                           <div className="flex flex-wrap gap-2 mb-8">
+                              {LOCATION_CITIES.slice(0, 11).map(city => (
+                                 <span key={city} className="px-3 py-1 bg-white/5 hover:bg-white/10 rounded-full text-xs text-white/80 transition-colors cursor-default">
+                                    {city}
+                                 </span>
+                              ))}
+                              <span className="px-3 py-1 bg-white/5 rounded-full text-xs text-white/40 italic font-medium">weitere Orte...</span>
+                           </div>
                         </div>
-                        <div className="space-y-2 text-white/60 text-sm">
-                           <p>Thomas Rott Facility Management</p>
+
+                        <div className="space-y-2 text-white/60 text-sm border-t border-white/10 pt-6">
+                           <p className="font-medium text-white font-sans">Thomas Rott Objektpflege &amp; Dienstleistungen</p>
                            <p>Kreisstraße 17, 85410 Haag an der Amper</p>
+                           <p className="text-xs text-white/40 mt-1">Gewerblich angemeldet &amp; haftpflichtversichert</p>
                         </div>
                      </div>
                   </div>
@@ -683,6 +1004,93 @@ const App: React.FC = () => {
           />
         )}
       </main>
+
+      {/* --- ELITE GALLERY LIGHTBOX --- */}
+      <AnimatePresence>
+        {activeLightboxIndex !== null && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[120] bg-black/95 backdrop-blur-xl flex flex-col justify-between p-4 md:p-8"
+          >
+             {/* Header */}
+             <div className="flex justify-between items-center w-full max-w-7xl mx-auto z-10 pt-2 text-white">
+                <div>
+                   <span className="text-xs uppercase tracking-widest text-emerald-400 font-bold">{GALLERY_IMAGES[activeLightboxIndex].category}</span>
+                   <h3 className="text-lg md:text-xl font-sans font-bold tracking-tight text-white/90 mt-0.5">{GALLERY_IMAGES[activeLightboxIndex].title}</h3>
+                </div>
+                <button 
+                  onClick={() => setActiveLightboxIndex(null)}
+                  className="p-3 bg-white/10 hover:bg-white/20 transition-colors rounded-full text-white cursor-pointer"
+                  aria-label="Schließen"
+                >
+                   <X className="w-6 h-6" />
+                </button>
+             </div>
+
+             {/* Main Image Stage */}
+             <div className="flex-1 flex items-center justify-center relative max-w-7xl mx-auto w-full py-4">
+                {/* Previous Button */}
+                <button 
+                   onClick={() => {
+                      setActiveLightboxIndex(prev => prev !== null ? (prev === 0 ? GALLERY_IMAGES.length - 1 : prev - 1) : null);
+                   }}
+                   className="absolute left-4 p-3 bg-white/10 hover:bg-white/20 transition-colors rounded-full text-white cursor-pointer z-10"
+                   aria-label="Vorheriges Bild"
+                >
+                   <ArrowLeft className="w-5 h-5" />
+                </button>
+
+                {/* Next Button */}
+                <button 
+                   onClick={() => {
+                      setActiveLightboxIndex(prev => prev !== null ? (prev === GALLERY_IMAGES.length - 1 ? 0 : prev + 1) : null);
+                   }}
+                   className="absolute right-4 p-3 bg-white/10 hover:bg-white/20 transition-colors rounded-full text-white cursor-pointer z-10"
+                   aria-label="Nächstes Bild"
+                >
+                   <ArrowRight className="w-5 h-5" />
+                </button>
+
+                <motion.img 
+                   key={activeLightboxIndex}
+                   initial={{ opacity: 0, scale: 0.95 }}
+                   animate={{ opacity: 1, scale: 1 }}
+                   exit={{ opacity: 0, scale: 0.95 }}
+                   transition={{ duration: 0.35, ease: 'easeOut' }}
+                   src={GALLERY_IMAGES[activeLightboxIndex].src}
+                   alt={GALLERY_IMAGES[activeLightboxIndex].alt}
+                   className="max-h-[75vh] max-w-[90vw] object-contain rounded-xl shadow-2xl border border-white/10"
+                />
+             </div>
+
+             {/* Footer counter */}
+             <div className="flex justify-center items-center gap-3 w-full pb-4 text-white/50 text-sm z-10">
+                <span>{activeLightboxIndex + 1}</span>
+                <span className="text-white/20">/</span>
+                <span>{GALLERY_IMAGES.length}</span>
+             </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* --- SCROLL-TO-TOP BUTTON --- */}
+      <AnimatePresence>
+        {showScrollTop && (
+          <motion.button
+            initial={{ opacity: 0, y: 30, scale: 0.8 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 30, scale: 0.8 }}
+            transition={{ duration: 0.3 }}
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            className="fixed bottom-24 right-5 md:bottom-8 md:right-8 z-[80] p-4 bg-forest-900 border border-forest-800 text-white hover:text-emerald-300 rounded-full shadow-2xl hover:bg-forest-950 transition-all duration-300 group cursor-pointer"
+            aria-label="Nach oben scrollen"
+          >
+             <ChevronUp className="w-5 h-5 group-hover:-translate-y-1 transition-transform duration-300" />
+          </motion.button>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

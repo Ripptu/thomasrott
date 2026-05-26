@@ -1,6 +1,6 @@
 import React from 'react';
 import { Leaf, Wrench, Snowflake, Phone, Calendar, ClipboardCheck, Home, Droplets, PaintBucket } from 'lucide-react';
-import { ServicePackage, Testimonial, ProcessStep, GalleryItem } from './types.ts';
+import { ServicePackage, Testimonial, ProcessStep, GalleryItem, FAQItem } from './types.ts';
 
 export const NAV_LINKS = [
   { label: 'Leistungen', href: '#services' },
@@ -9,94 +9,92 @@ export const NAV_LINKS = [
   { label: 'Kontakt', href: '#contact' },
 ];
 
-// COPYWRITING UPDATE: Kurz, prägnant, Premium-Anspruch.
+// COPYWRITING UPDATE: Sympathisch, bayerisch-herzlich, ehrlich und extrem stark für SEO.
 export const HERO_HEADLINE = (
   <>
-    Ihr Garten & Haus in besten Händen – <span className="font-serif italic font-normal">direkt vom Profi.</span>
+    Ihr Garten & Haus in <span className="font-serif italic font-normal text-forest-700">liebevollen Profi-Händen.</span>
   </>
 );
-export const HERO_SUBTEXT = "Hallo, ich bin Thomas Rott. Vergessen Sie unzuverlässige Großfirmen. Ich kümmere mich persönlich um die Pflege Ihrer Immobilie und Grünanlagen in Freising & Umgebung. Zuverlässig, sauber und mit Liebe zum Detail.";
+export const HERO_SUBTEXT = "Servus, ich bin Thomas Rott! Vergessen Sie unzuverlässige Agenturen und anonyme Großfirmen. Als Ihr ehrlicher, bodenständiger Partner vor Ort kümmere ich mich persönlich um Ihr Grundstück im Raum Freising, Erding, Landshut & Umgebung. Mit Herzblut, eigenem Profi-Maschinenpark und dem Auge fürs Detail.";
 
 export const LOCATION_CITIES = [
-  "Freising", "Erding", "Landshut", "München", "Moosburg", "Pfaffenhofen", "Dachau", 
-  "Ingolstadt Süd", "Neufahrn", "Hallbergmoos", "Wartenberg", "Dorfen", "Mainburg", 
-  "Kelheim", "Altötting", "Rosenheim", "Bad Aibling", "Wasserburg", "Ebersberg", 
-  "Grafing", "Markt Schwaben", "Poing", "Unterschleißheim", "Garching", "Ismaning", 
-  "Aichach", "Schrobenhausen"
+  "Freising", "Erding", "Landshut", "Moosburg", "München Nord", "Neufahrn", "Hallbergmoos", 
+  "Wartenberg", "Dorfen", "Mainburg", "Haag an der Amper", "Zolling", "Nandlstadt", "Au in der Hallertau",
+  "Marzling", "Langenbach", "Kirchdorf", "Fahrenzhausen", "Hörgertshausen", "Mauern", "Eching",
+  "Garching", "Ismaning", "Unterschleißheim"
 ];
 
 export const SERVICE_PACKAGES: ServicePackage[] = [
   {
-    name: "Gartenpflege",
+    name: "Garten- & Heckenpflege",
     category: "Garten",
-    description: "Rasen mähen, Hecken schneiden, Unkraut entfernen. Ihr Garten, immer top gepflegt.",
-    badge: "Kernkompetenz",
+    description: "Ein Garten zum Aufatmen und Wohlfühlen. Ob Hecke stutzen, Rasenpflege, Unkrautbeseitigung oder fachgerechter Saisonschnitt – ich kümmere mich darum, dass Ihr privates Grün das ganze Jahr über glänzt.",
+    badge: "Unsere Leidenschaft",
     features: [
-      "Rasen mähen & vertikutieren",
-      "Hecken & Sträucher schneiden",
-      "Unkraut entfernen",
-      "Laub rechen"
+      "Präziser Hecken- & Sträucherschnitt",
+      "Erste-Klasse Rasenpflege & Vertikutieren",
+      "Gründliche Unkraut- & Wildkrautbeseitigung",
+      "Saisonale Gartenpflege & Laubservice"
     ],
-    cta: "Garten besprechen"
+    cta: "Garten-Gespräch vereinbaren"
   },
   {
-    name: "Hausmeisterservice",
+    name: "Persönlicher Hausmeisterservice",
     category: "Haus",
-    description: "Kleine Reparaturen, Instandhaltung, Mülltonnen-Service. Ich halte alles in Schuss.",
+    description: "Die Sorgenfrei-Garantie für Ihr Eigentum. Vom zuverlässigen Müllkübel-Service über Kontrollgänge bis hin zu kleinen Handwerkskniffen – ich halte Ihr Gebäude in Schuss und sichere den Wert Ihrer Immobilie.",
     features: [
-      "Kleine Reparaturen",
-      "Instandhaltung",
-      "Mülltonnen-Service",
-      "Leuchtmittelwechsel"
+      "Kleine Reparaturen & Instandhaltung",
+      "Mülltonnen- & Bereitstellungsservice",
+      "Regelmäßige Objekt- & Haustechnikkontrolle",
+      "Leuchtmittelwechsel & Kleinmontagen"
     ],
-    cta: "Betreuung anfragen"
+    cta: "Objekt betreuen lassen"
   },
   {
-    name: "Reinigungsarbeiten",
+    name: "Gründliche Reinigungsarbeiten",
     category: "Sauberkeit",
-    description: "Treppenhaus, Hof, Terrassen. Strahlend sauber, ohne dass Sie einen Finger rühren müssen.",
+    description: "Strahlende Sauberkeit ohne Stress. Ich befreie Ihre Höfe, Einfahrten, Zuwege und Terrassen rückstandslos von Moos und Schmutz und reinige Treppenhäuser so sauber, dass das Nachhausekommen jeden Tag Freude bereitet.",
     features: [
-      "Treppenhausreinigung",
-      "Hof- & Wegereinigung",
-      "Terrassenreinigung",
-      "Fensterreinigung"
+      "Treppenhausreinigung für Mehrfamilienhäuser",
+      "Hof-, Gehweg- & Einfahrtenreinigung",
+      "Terrassenreinigung (Moos- & Algenbeseitigung)",
+      "Zuverlässig-schonende Oberflächenpflege"
     ],
-    cta: "Angebot einholen"
+    cta: "Sauberkeits-Angebot einholen"
   },
   {
-    name: "Winterdienst",
+    name: "Zuverlässiger Winterdienst",
     category: "Sicherheit",
-    description: "Sichere und schneefreie Wege, wenn Sie noch schlafen.",
+    description: "Schneefrei und sicher, noch bevor Sie aufstehen. Wenn der bayerische Winter einbricht, bin ich bereits für Sie aktiv. Zuverlässige Schneeräumung und umweltfreundliche Glättebekämpfung nach allen kommunalen Richtlinien.",
     features: [
-      "Schneeräumen",
-      "Streudienst",
-      "Eisglättebekämpfung",
-      "Zuverlässig & früh"
+      "Pünktliche Schneeräumung in den Morgenstunden",
+      "Fachgerechter Streudienst bei Glatteis",
+      "Einhaltung aller Ortssatzungen & Haftung",
+      "24/7 Bereitschaft für Vertragspartner"
     ],
-    cta: "Kapazität prüfen"
+    cta: "Winterdienst sichern"
   },
   {
-    name: "Erdarbeiten",
+    name: "Präzise Erdarbeiten & Baggerarbeiten",
     category: "Bau & Garten",
-    description: "Professionelle Baggerarbeiten, Aushub und Planierungen für Ihre Projekte.",
+    description: "Erdbewegungen mit Fingerspitzengefühl. Ob Geländenivellierung, präziser Grabenaushub für Leitungen oder die Vorbereitung von Tragschichten für Terrassen und Wege – mit modernem Bagger erledige ich das rasch und sauber.",
     features: [
-      "Baggerarbeiten",
-      "Boden planieren",
-      "Grabenaushub",
-      "Materialtransport"
+      "Wendige Baggerarbeiten (auch bei Engpässen)",
+      "Boden planieren & Gelände modellieren",
+      "Grabenaushub für Kabel & Entwässerung",
+      "Schottertragschichten herstellen"
     ],
-    cta: "Projekt besprechen"
+    cta: "Baggerprojekt besprechen"
   },
   {
     name: "Fundamente für Wärmepumpen",
     category: "Bau",
-    description: "Exakte und normgerechte Fundamentarbeiten für die sichere Aufstellung von Wärmepumpen.",
+    description: "Das perfekte Fundament für Ihre neue Wärmepumpe. Standfest gegossen, exakt eingemessen, inklusive staubfreier Kernbohrung durch die Kellerwand und sauberen Hausanschlussleitungen. Alles aus einer Hand.",
     features: [
-      "Erdaushub",
-      "Schotterbett & Frostschutz",
-      "Betonieren & Glätten",
-      "Kernbohrung",
-      "Leitung reinlegen"
+      "Frostsicherer Aushub & Schotterbett",
+      "Präzises Einschalen, Gießen & Glätten",
+      "Erfahrene Kernbohrung durch die Außenmauer",
+      "Fachgerechtes Einlegen der Zuleitungen"
     ],
     cta: "Fundament anfragen"
   }
@@ -343,5 +341,32 @@ export const TESTIMONIALS: Testimonial[] = [
     role: "Baumfällung",
     service: "Wurzelentfernung",
     quote: "Sehr gute Kommunikation, pünktlich, sehr gute Arbeit. Sehr empfehlenswert! Danke für die schnelle Erledigung!"
+  }
+];
+
+export const FAQ_ITEMS: FAQItem[] = [
+  {
+    question: "Welche Leistungen umfasst Ihre Gartenpflege in Freising und Umgebung?",
+    answer: "Meine professionelle Gartenpflege reicht vom fachgerechten Rasenmähen und Vertikutieren über den präzisen Heckenschnitt, Strauchschnitt bis hin zu Unkrautbeseitigung, Laubentfernung und allgemeiner Saisonpflege. Ich stimme alle Maßnahmen individuell auf die Bedürfnisse Ihres Gartens ab, um einen langfristigen Werterhalt und ein makelloses Erscheinungsbild zu garantieren."
+  },
+  {
+    question: "Erstellen Sie auch Fundamente für Wärmepumpen?",
+    answer: "Ja, ich biete exakte Fundamentarbeiten speziell für Wärmepumpen an. Dies beinhaltet den präzisen Erdaushub, das Einbringen eines frostsicheren Schotterbetts mit Dränagegitter, das professionelle Einschalen, Gießen und Glätten des Betonfundaments. Auch Kernbohrungen für die Rohrdurchführung und das fachgerechte Verlegen der Anschlussleitungen gehören zu meinem Leistungsumfang."
+  },
+  {
+    question: "Bieten Sie auch größere Erdarbeiten und Baggerarbeiten an?",
+    answer: "Absolut. Mit meinem modernen Maschinenpark übernehme ich verschiedenste Baggerarbeiten, Bodennivellierungen, den Aushub von Leitungsgräben, Drainage-Arbeiten sowie das Vorbereiten von Tragschichten für Terrassen oder Zuwege. Auch der Abtransport und die Entsorgung von überschüssigem Erdaushub wird von mir zuverlässig abgewickelt."
+  },
+  {
+    question: "Wie funktioniert die Zusammenarbeit beim Hausmeisterservice?",
+    answer: "Zuverlässigkeit steht an erster Stelle. Nach einer gemeinsamen Erstbegehung definieren wir die genauen Intervalle und Tätigkeiten. Ob Leuchtmittelwechsel, kleinere Instandhaltungen, Bereitstellung der Mülltonnen oder regelmäßige Kontrollgänge – Sie haben immer mich als persönlichen Ansprechpartner und müssen sich um nichts weiter kümmern."
+  },
+  {
+    question: "In welchen Städten und Gemeinden sind Sie aktiv?",
+    answer: "Mein primäres Servicegebiet umfasst Freising, Erding, Landshut, Moosburg, Neufahrn, Hallbergmoos und Haag an der Amper sowie den gesamten nördlichen Raum von München. Je nach Projektgröße (wie z.B. bei aufwändigen Erdarbeiten oder Wärmepumpen-Fundamenten) nehme ich auch Aufträge in angrenzenden Regionen Oberbayerns und Niederbayerns entgegen."
+  },
+  {
+    question: "Wie läuft der Prozess ab und wann erhalte ich mein Angebot?",
+    answer: "Der Ablauf ist denkbar einfach und professionell: 1. Sie kontaktieren mich per Anruf oder WhatsApp für eine kostenlose, unverbindliche Erstbesichtigung vor Ort. 2. Ich begutachte das Projekt und erstelle Ihnen zeitnah ein transparentes Festpreis-Angebot ohne versteckte Nebenkosten. 3. Nach Ihrer Freigabe setzen wir die Arbeiten pünktlich, sauber und termingerecht um."
   }
 ];

@@ -36,98 +36,156 @@
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "HomeAndConstructionBusiness",
-      "name": "Thomas Rott Facility Management",
-      "image": "https://i.postimg.cc/pTPCtyfc/Logo-neu.png",
-      "url": "https://www.thomasrott.de",
-      "telephone": "+4917667580812",
-      "email": "info@thomasrott.de",
-      "address": {
-        "@type": "PostalAddress",
-        "streetAddress": "Kreisstraße 17",
-        "addressLocality": "Haag an der Amper",
-        "postalCode": "85410",
-        "addressCountry": "DE"
-      },
-      "geo": {
-        "@type": "GeoCoordinates",
-        "latitude": "48.4586",
-        "longitude": "11.8269"
-      },
-      "openingHoursSpecification": {
-        "@type": "OpeningHoursSpecification",
-        "dayOfWeek": [
-          "Monday",
-          "Tuesday",
-          "Wednesday",
-          "Thursday",
-          "Friday"
-        ],
-        "opens": "07:00",
-        "closes": "18:00"
-      },
-      "areaServed": [
-        "Freising",
-        "Erding",
-        "Landshut",
-        "München",
-        "Moosburg an der Isar",
-        "Haag an der Amper",
-        "Pfaffenhofen an der Ilm",
-        "Dachau",
-        "Ingolstadt",
-        "Neufahrn bei Freising",
-        "Hallbergmoos",
-        "Wartenberg",
-        "Dorfen",
-        "Mainburg",
-        "Ebersberg",
-        "Garching bei München",
-        "Ismaning",
-        "Unterschleißheim"
-      ],
-      "hasOfferCatalog": {
-        "@type": "OfferCatalog",
-        "name": "Dienstleistungen",
-        "itemListElement": [
-          {
-            "@type": "Offer",
-            "itemOffered": {
-              "@type": "Service",
-              "name": "Gartenpflege & Grünanlagenpflege"
-            }
+      "@graph": [
+        {
+          "@type": "HomeAndConstructionBusiness",
+          "@id": "https://www.thomasrott.de/#business",
+          "name": "Thomas Rott Premium Objektbetreuung & Dienstleistungen",
+          "image": "https://i.postimg.cc/pTPCtyfc/Logo-neu.png",
+          "url": "https://www.thomasrott.de",
+          "telephone": "+4917667580812",
+          "email": "info@thomasrott.de",
+          "priceRange": "$$",
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "Kreisstraße 17",
+            "addressLocality": "Haag an der Amper",
+            "postalCode": "85410",
+            "addressRegion": "Bayern",
+            "addressCountry": "DE"
           },
-          {
-            "@type": "Offer",
-            "itemOffered": {
-              "@type": "Service",
-              "name": "Hausmeisterservice & Objektbetreuung"
-            }
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": "48.4586",
+            "longitude": "11.8269"
           },
-          {
-            "@type": "Offer",
-            "itemOffered": {
-              "@type": "Service",
-              "name": "Fassadenreinigung"
-            }
+          "openingHoursSpecification": {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": [
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday"
+            ],
+            "opens": "07:00",
+            "closes": "18:00"
           },
-          {
-            "@type": "Offer",
-            "itemOffered": {
-              "@type": "Service",
-              "name": "Winterdienst"
-            }
-          },
-          {
-            "@type": "Offer",
-            "itemOffered": {
-              "@type": "Service",
-              "name": "Gebäudereinigung"
-            }
+          "areaServed": [
+            "Freising",
+            "Erding",
+            "Landshut",
+            "München",
+            "Moosburg an der Isar",
+            "Haag an der Amper",
+            "Pfaffenhofen an der Ilm",
+            "Dachau",
+            "Ingolstadt",
+            "Neufahrn bei Freising",
+            "Hallbergmoos",
+            "Wartenberg",
+            "Dorfen",
+            "Mainburg",
+            "Ebersberg",
+            "Garching bei München",
+            "Ismaning",
+            "Unterschleißheim",
+            "Altötting",
+            "Rosenheim",
+            "Bad Aibling",
+            "Wasserburg",
+            "Grafing",
+            "Markt Schwaben",
+            "Poing",
+            "Aichach",
+            "Schrobenhausen"
+          ],
+          "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "Dienstleistungen & Projektarbeiten",
+            "itemListElement": [
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Gartenpflege & Heckenpflege",
+                  "description": "Premium Gartenpflege inkl. Heckenschnitt, Rasenmähen, Vertikutieren & Laubpflege in Freising."
+                }
+              },
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Hausmeisterservice & Objektbetreuung",
+                  "description": "Eigentümer-Objektbetreuung mit kleinen Reparaturen, Mülltonnenservice und Werterhalt im Landkreis Erding."
+                }
+              },
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Erdarbeiten & Baggerarbeiten",
+                  "description": "Professioneller Grabenaushub, Bodennivellierung und Erdbewegungen mit modernen Baggern."
+                }
+              },
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Fundamente für Wärmepumpen",
+                  "description": "Normgerechtes Gießen von Wärmepumpenfundamenten mit Kernbohrung & Leitungsverlegung."
+                }
+              },
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Winterdienst",
+                  "description": "Pünktliche Schneeräumung und Streudienst bei Glättegefahr im Großraum Landshut."
+                }
+              }
+            ]
           }
-        ]
-      },
-      "priceRange": "$$"
+        },
+        {
+          "@type": "FAQPage",
+          "@id": "https://www.thomasrott.de/#faq",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "Welche Leistungen umfasst Ihre Gartenpflege in Freising und Umgebung?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Meine professionelle Gartenpflege reicht vom fachgerechten Rasenmähen und Vertikutieren über den präzisen Heckenschnitt, Strauchschnitt bis hin zu Unkrautbeseitigung, Laubentfernung und allgemeiner Saisonpflege. Ich stimme alle Maßnahmen individuell auf die Bedürfnisse Ihres Gartens ab, um einen langfristigen Werterhalt und ein makelloses Erscheinungsbild zu garantieren."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Erstellen Sie auch Fundamente für Wärmepumpen?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Ja, ich biete exakte Fundamentarbeiten speziell für Wärmepumpen an. Dies beinhaltet den präzisen Erdaushub, das Einbringen eines frostsicheren Schotterbetts mit Dränagegitter, das professionelle Einschalen, Gießen und Glätten des Betonfundaments. Auch Kernbohrungen für die Rohrdurchführung und das fachgerechte Verlegen der Anschlussleitungen gehören zu meinem Leistungsumfang."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Bieten Sie auch größere Erdarbeiten und Baggerarbeiten an?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Absolut. Mit meinem modernen Maschinenpark übernehme ich verschiedenste Baggerarbeiten, Bodennivellierungen, den Aushub von Leitungsgräben, Drainage-Arbeiten sowie das Vorbereiten von Tragschichten für Terrassen oder Zuwege. Auch der Abtransport und die Entsorgung von überschüssigem Erdaushub wird von mir zuverlässig abgewickelt."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "In welchen Städten und Gemeinden sind Sie aktiv?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Mein primäres Servicegebiet umfasst Freising, Erding, Landshut, Moosburg, Neufahrn, Hallbergmoos und Haag an der Amper sowie den gesamten nördlichen Raum von München. Je nach Projektgröße (wie z.B. bei aufwändigen Erdarbeiten oder Wärmepumpen-Fundamenten) nehme ich auch Aufträge in angrenzenden Regionen Oberbayerns und Niederbayerns entgegen."
+              }
+            }
+          ]
+        }
+      ]
     }
     </script>
 
