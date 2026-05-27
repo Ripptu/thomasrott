@@ -187,6 +187,12 @@ const App: React.FC = () => {
   // Loading Animation Timer - Optimized for the new satisfying animation sequence
   useEffect(() => {
     const timer = setTimeout(() => {
+      const preloader = document.getElementById('initial-preloader');
+      if (preloader) {
+        preloader.classList.add('opacity-0', 'pointer-events-none', 'scale-105', 'blur-sm');
+        preloader.classList.remove('opacity-100');
+        setTimeout(() => preloader.remove(), 1000); // Remove from DOM after fade out
+      }
       setIsLoading(false);
     }, 2800); 
     return () => clearTimeout(timer);
@@ -280,57 +286,7 @@ const App: React.FC = () => {
         </a>
       </div>
 
-      {/* --- PREMIUM LOADING SCREEN --- */}
-      <div 
-        className={`
-          fixed inset-0 z-[110] bg-white flex flex-col items-center justify-center gap-10 
-          transition-all duration-1000 ease-[cubic-bezier(0.76,0,0.24,1)]
-          ${isLoading 
-            ? 'opacity-100 visible' 
-            : 'opacity-0 invisible pointer-events-none scale-105 blur-sm'
-          }
-        `}
-      >
-         {/* Logo Animation */}
-         <motion.div
-            initial={{ opacity: 0, scale: 0.9, filter: 'blur(10px)' }}
-            animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
-            transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-            className="relative"
-         >
-           <img 
-             src="https://i.postimg.cc/pTPCtyfc/Logo-neu.png" 
-             alt="Thomas Rott Logo" 
-             className="w-72 md:w-96 h-auto drop-shadow-2xl"
-           />
-         </motion.div>
-
-         {/* Buttons Animation - Staggered entrance */}
-         <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8, duration: 0.8, ease: "easeOut" }}
-            className="flex flex-col sm:flex-row gap-5 items-center w-full max-w-sm px-6 sm:px-0"
-         >
-            <a 
-              href="tel:017667580812" 
-              className="group relative w-full sm:w-auto flex-1 flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-br from-forest-900 to-forest-800 text-white rounded-2xl shadow-[0_10px_30px_-10px_rgba(17,41,33,0.5)] hover:shadow-[0_20px_40px_-10px_rgba(17,41,33,0.6)] transition-all duration-300 hover:-translate-y-1 active:scale-95 overflow-hidden"
-            >
-              <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <Phone className="w-5 h-5 text-forest-200" />
-              <span className="font-sans font-bold tracking-wide">Anrufen</span>
-            </a>
-
-            <a 
-              href="https://wa.me/4917667580812" 
-              className="group relative w-full sm:w-auto flex-1 flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-br from-[#25D366] to-[#1da851] text-white rounded-2xl shadow-[0_10px_30px_-10px_rgba(37,211,102,0.4)] hover:shadow-[0_20px_40px_-10px_rgba(37,211,102,0.5)] transition-all duration-300 hover:-translate-y-1 active:scale-95 overflow-hidden"
-            >
-              <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <WhatsAppIcon className="w-5 h-5 text-white" />
-              <span className="font-sans font-bold tracking-wide">WhatsApp</span>
-            </a>
-         </motion.div>
-      </div>
+      {/* --- PRELOADER HAS MOVED TO index.html FOR INSTANT LOAD --- */}
 
       {/* --- HEADER --- */}
       <header 
@@ -419,10 +375,10 @@ const App: React.FC = () => {
                 transition={{ delay: 0.5, duration: 0.5 }}
                 className="flex gap-8 mt-16 justify-center items-center text-forest-900/60"
               >
-                 <a href="#" className="hover:text-forest-900 transition-colors"><InstagramIcon className="w-6 h-6"/></a>
-                 <a href="#" className="hover:text-forest-900 transition-colors"><FacebookIcon className="w-6 h-6"/></a>
-                 <a href="https://wa.me/4917667580812" className="hover:text-forest-900 transition-colors"><WhatsAppIcon className="w-6 h-6"/></a>
-                 <a href="tel:017667580812" className="hover:text-forest-900 transition-colors"><Phone className="w-6 h-6"/></a>
+                 <a href="#" aria-label="Thomas Rott auf Instagram" title="Instagram" className="hover:text-forest-900 transition-colors"><InstagramIcon className="w-6 h-6"/></a>
+                 <a href="#" aria-label="Thomas Rott auf Facebook" title="Facebook" className="hover:text-forest-900 transition-colors"><FacebookIcon className="w-6 h-6"/></a>
+                 <a href="https://wa.me/4917667580812" aria-label="Kontakt über WhatsApp" title="WhatsApp" className="hover:text-forest-900 transition-colors"><WhatsAppIcon className="w-6 h-6"/></a>
+                 <a href="tel:017667580812" aria-label="Direkt Anrufen" title="Anrufen" className="hover:text-forest-900 transition-colors"><Phone className="w-6 h-6"/></a>
               </motion.div>
             </motion.div>
           )}
@@ -432,60 +388,55 @@ const App: React.FC = () => {
       <main>
         {currentView === 'home' ? (
           <>
-            {/* --- HERO SECTION (Optimized for Mobile) --- */}
-            {/* Reduced Top Padding to move content up (pt-24 / md:pt-32) */}
-            <section className="relative pt-24 pb-16 md:pt-32 md:pb-32 px-4 md:px-8 max-w-[1400px] mx-auto overflow-hidden">
-               <div className="flex flex-col items-center text-center max-w-4xl mx-auto">
+            {/* --- HERO SECTION (Minimalist) --- */}
+            <section className="relative pt-28 pb-12 md:pt-36 md:pb-20 px-4 md:px-8 max-w-[1400px] mx-auto overflow-hidden">
+               <div className="flex flex-col items-center text-center max-w-3xl mx-auto">
                   
-                  {/* Badge REMOVED here */}
-
-                  {/* Logo */}
+                  {/* Logo - Made smaller */}
                   <img 
                     src="https://i.postimg.cc/pTPCtyfc/Logo-neu.png" 
                     alt="Thomas Rott Logo" 
-                    className="w-full max-w-[250px] md:max-w-[350px] lg:max-w-[400px] h-auto mb-8 animate-fade-up mx-auto"
+                    className="w-full max-w-[180px] md:max-w-[240px] lg:max-w-[280px] h-auto mb-6 animate-fade-up mx-auto"
                     style={{ animationDelay: '0.0s' }}
                   />
 
-                  {/* High Quality Live Active Ticker Badge */}
+                  {/* High Quality Live Active Ticker Badge - Less margin */}
                   <motion.div 
                      initial={{ opacity: 0, scale: 0.95 }}
                      animate={{ opacity: 1, scale: 1 }}
                      transition={{ delay: 0.4, duration: 0.5 }}
-                     className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-500/5 hover:bg-emerald-500/10 border border-emerald-500/20 rounded-full mb-8 text-emerald-800 text-xs font-semibold tracking-wide shadow-sm"
+                     className="inline-flex items-center gap-2 px-3 py-1.5 bg-emerald-500/5 hover:bg-emerald-500/10 border border-emerald-500/20 rounded-full mb-6 text-emerald-800 text-[11px] font-semibold tracking-wide shadow-sm"
                   >
-                     <span className="relative flex h-2 w-2">
+                     <span className="relative flex h-1.5 w-1.5">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                        <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
                      </span>
                      <span>Heute im Raum <span className="underline decoration-emerald-500/30 font-bold">{activeTickerCity}</span> &amp; Umgebung im Einsatz</span>
                   </motion.div>
 
-                  {/* Headline */}
+                  {/* Headline - reduced size */}
                   <h1 
-                    className="text-4xl md:text-5xl lg:text-6xl font-sans font-bold tracking-tight text-forest-950 mb-6 animate-fade-up leading-tight"
+                    className="text-3xl md:text-4xl lg:text-5xl font-sans font-bold tracking-tight text-forest-950 mb-4 animate-fade-up leading-tight"
                     style={{ animationDelay: '0.1s' }}
                   >
                     {HERO_HEADLINE}
                   </h1>
 
-                  {/* Subline */}
-                  <p className="text-lg md:text-xl text-forest-900/60 leading-relaxed max-w-2xl mb-10 md:mb-12 animate-fade-up" style={{ animationDelay: '0.2s' }}>
+                  {/* Subline - reduced size */}
+                  <p className="text-base md:text-lg text-forest-900/60 leading-relaxed max-w-2xl mb-8 animate-fade-up" style={{ animationDelay: '0.2s' }}>
                     {HERO_SUBTEXT}
                   </p>
 
-                  {/* CTA Buttons (Stacked on Mobile for easy tapping) */}
-                  <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto animate-fade-up" style={{ animationDelay: '0.3s' }}>
+                  {/* CTA Buttons */}
+                  <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto animate-fade-up" style={{ animationDelay: '0.3s' }}>
                     <Button 
-                      size="lg" 
-                      className="w-full sm:w-auto shadow-xl shadow-forest-900/20"
+                      className="w-full sm:w-auto shadow-md shadow-forest-900/10 hover:shadow-lg transition-shadow"
                       onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
                     >
                       Jetzt kostenloses Angebot einholen
                     </Button>
                     <Button 
                       variant="outline" 
-                      size="lg" 
                       className="w-full sm:w-auto"
                       onClick={() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' })}
                     >
@@ -493,14 +444,13 @@ const App: React.FC = () => {
                     </Button>
                   </div>
 
-                  {/* Trust Indicators (Social Proof immediately visible) */}
-                  <div className="mt-8 md:mt-12 flex items-center gap-6 animate-fade-up" style={{ animationDelay: '0.4s' }}>
+                  {/* Trust Indicators */}
+                  <div className="mt-8 flex items-center gap-4 animate-fade-up" style={{ animationDelay: '0.4s' }}>
                       <div className="flex flex-col items-center">
-                         {/* GLOWING STARS */}
-                         <div className="flex gap-1 text-yellow-400 mb-1 drop-shadow-[0_0_8px_rgba(250,204,21,0.8)]">
-                            {[1,2,3,4,5].map(i => <Star key={i} className="w-4 h-4 fill-current" />)}
+                         <div className="flex gap-1 text-yellow-400 mb-1">
+                            {[1,2,3,4,5].map(i => <Star key={i} className="w-3.5 h-3.5 fill-current" />)}
                          </div>
-                         <span className="text-xs font-medium text-forest-900/60">Von Nachbarn in Freising & Umgebung empfohlen.</span>
+                         <span className="text-[11px] font-medium text-forest-900/50 uppercase tracking-wider">Von Nachbarn in Freising & Umgebung empfohlen</span>
                       </div>
                   </div>
 
