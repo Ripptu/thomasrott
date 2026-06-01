@@ -13,11 +13,11 @@ export const Button: React.FC<ButtonProps> = ({
   children, 
   ...props 
 }) => {
-  const baseStyles = "inline-flex items-center justify-center rounded-full font-medium transition-all duration-300 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed transform active:scale-95";
+  const baseStyles = "inline-flex items-center justify-center rounded-full font-medium transition-all duration-[400ms] focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed transform active:scale-[0.98]";
   
   const variants = {
     // Primary: Deep Green with a colored glow instead of black shadow
-    primary: "bg-forest-900 text-white hover:bg-forest-800 shadow-[0_4px_20px_-4px_rgba(17,41,33,0.5)] hover:shadow-[0_8px_25px_-4px_rgba(17,41,33,0.6)] hover:-translate-y-0.5",
+    primary: "bg-white text-black hover:opacity-95 shadow-sm border border-neutral-200/50 hover:shadow-inner hover:-translate-y-0.5",
     
     // Secondary: Very subtle tinted background
     secondary: "bg-forest-50 text-forest-900 hover:bg-forest-100 border border-transparent shadow-sm hover:shadow",

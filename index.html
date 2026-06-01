@@ -294,6 +294,44 @@
       ::-webkit-scrollbar-thumb:hover {
         background: #265244;
       }
+
+      /* ==========================================
+         PREMIUM FLUID INTERACTION TIMING & BEZIER
+         ========================================== */
+      
+      /* Global override for transition animations to use the luxury ease-in-out curve */
+      .transition, 
+      .transition-all, 
+      .transition-colors, 
+      .transition-opacity, 
+      .transition-transform {
+        transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1) !important;
+        transition-duration: 400ms !important;
+      }
+
+      /* Active tactile haptic bounce feedback for click targets */
+      button:active, 
+      a:active, 
+      input[type="submit"]:active,
+      [role="button"]:active {
+        transform: scale(0.98) !important;
+        transition: transform 0.12s cubic-bezier(0.16, 1, 0.3, 1) !important;
+      }
+
+      /* Weicher, geschmeidiger Fade-In-Up-Effekt für Sektionen beim Scrollen */
+      .fade-in-on-scroll {
+        opacity: 0;
+        transform: translateY(35px);
+        transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1), transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+        will-change: opacity, transform, filter;
+        filter: blur(1px);
+      }
+
+      .fade-in-on-scroll.active {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0px);
+      }
     </style>
   <script type="importmap">
 {

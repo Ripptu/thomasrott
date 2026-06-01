@@ -9,6 +9,16 @@ import { InstagramIcon, FacebookIcon, WhatsAppIcon } from './components/SocialIc
 import { LegalView } from './components/LegalView.tsx';
 import { LEGAL_CONTENT } from './legalContent.ts';
 
+// Helper function to optimize and convert external images on-the-fly to lightweight WebP format.
+// Uses free, high-performance, Cloudflare-backed weserv.nl CDN proxy with secure caching.
+const getOptimizedUrl = (url: string, width?: number, quality = 80): string => {
+  if (!url) return '';
+  if (url.startsWith('data:') || url.endsWith('.svg') || url.includes('Logo-neu.png')) {
+    return url;
+  }
+  return `https://images.weserv.nl/?url=${encodeURIComponent(url)}&output=webp${width ? `&w=${width}` : ''}&q=${quality}`;
+};
+
 type ViewState = 'home' | 'impressum' | 'agb' | 'datenschutz';
 
 const SmoothMarquee = ({ children }: { children: React.ReactNode }) => {
@@ -223,6 +233,32 @@ const App: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Intersection Observer for scroll-fade animations
+  useEffect(() => {
+    const observerOptions = {
+      root: null,
+      rootMargin: '0px 0px -10% 0px', // slightly offset trigger to feel natural
+      threshold: 0.05,
+    };
+
+    const handleIntersection = (entries: IntersectionObserverEntry[], observer: IntersectionObserver) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('active');
+          observer.unobserve(entry.target);
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(handleIntersection, observerOptions);
+    const elements = document.querySelectorAll('.fade-in-on-scroll');
+    elements.forEach((el) => observer.observe(el));
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [currentView, isLoading]);
+
   // GSAP removed for pure React implementation to ensure perfect mobile performance without script fighting
   // The goal is native, buttery smooth touch interactions.
 
@@ -389,7 +425,7 @@ const App: React.FC = () => {
         {currentView === 'home' ? (
           <>
             {/* --- HERO SECTION (Minimalist) --- */}
-            <section className="relative pt-28 pb-12 md:pt-36 md:pb-20 px-4 md:px-8 max-w-[1400px] mx-auto overflow-hidden">
+            <section className="relative pt-28 pb-12 md:pt-36 md:pb-20 px-4 md:px-8 max-w-[1400px] mx-auto overflow-hidden fade-in-on-scroll">
                <div className="flex flex-col items-center text-center max-w-3xl mx-auto">
                   
                   {/* Logo - Made smaller */}
@@ -458,7 +494,7 @@ const App: React.FC = () => {
             </section>
 
              {/* --- PHILOSOPHY (ABOUT) SECTION (Refined Text) --- */}
-              <section id="about" className="bg-forest-950 py-16 md:py-24 relative overflow-hidden rounded-3xl md:rounded-[4rem] mx-4 md:mx-0 mb-20">
+              <section id="about" className="bg-forest-950 py-16 md:py-24 relative overflow-hidden rounded-3xl md:rounded-[4rem] mx-4 md:mx-0 mb-20 fade-in-on-scroll">
                 <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-forest-500/10 rounded-full blur-[120px] pointer-events-none mix-blend-screen" />
                 
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -467,9 +503,17 @@ const App: React.FC = () => {
                           <div className="relative rounded-3xl overflow-hidden border border-white/10 shadow-2xl group">
                             <div className="absolute inset-0 bg-gradient-to-t from-forest-950/80 to-transparent z-10" />
                             <img
-                              src="https://i.postimg.cc/jqcqHjMd/Whats-App-Image-2025-12-21-at-15-45-22.jpg"
+                              src={getOptimizedUrl("https://i.postimg.cc/jqcqHjMd/Whats-App-Image-2025-12-21-at-15-45-22.jpg", 1000, 80)}
                               alt="Thomas Rott bei der Arbeit"
                               className="w-full h-[500px] lg:h-[600px] object-cover transform transition-transform duration-700 group-hover:scale-105"
+                              loading="lazy"
+                              onError={(e) => {
+                                const target = e.currentTarget;
+                                const original = "https://i.postimg.cc/jqcqHjMd/Whats-App-Image-2025-12-21-at-15-45-22.jpg";
+                                if (target.src !== original) {
+                                  target.src = original;
+                                }
+                              }}
                             />
                             {/* Optional: Add a small badge on top of the image */}
                             <div className="absolute bottom-8 left-8 z-20">
@@ -517,7 +561,7 @@ const App: React.FC = () => {
               </section>
 
             {/* --- SERVICES (Swipeable on Mobile) --- */}
-            <section id="services" className="py-16 md:py-32 bg-slate-50">
+            <section id="services" className="py-16 md:py-32 bg-slate-50 fade-in-on-scroll">
                <div className="max-w-[1400px] mx-auto px-4 md:px-8">
                   <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-10 md:mb-16">
                      <div>
@@ -619,7 +663,7 @@ const App: React.FC = () => {
             </section>
 
             {/* --- GALLERY (Trust) --- */}
-            <section id="gallery" className="py-16 md:py-32 bg-white">
+            <section id="gallery" className="py-16 md:py-32 bg-white fade-in-on-scroll">
                <div className="max-w-[1400px] mx-auto px-4 md:px-8">
                   <h2 className="text-3xl md:text-5xl font-sans font-bold tracking-tight text-forest-950 mb-12 text-center">
                     Ein<span className="font-serif italic font-normal text-forest-700">blicke</span>
@@ -638,10 +682,17 @@ const App: React.FC = () => {
                               className="group relative aspect-square rounded-2xl overflow-hidden cursor-pointer bg-forest-50"
                            >
                               <img 
-                                src={img.src} 
+                                src={getOptimizedUrl(img.src, 600, 75)} 
                                 alt={img.alt} 
-                                className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 cursor-zoom-in" onClick={() => setActiveLightboxIndex(idx)}
+                                className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 cursor-zoom-in" 
+                                onClick={() => setActiveLightboxIndex(idx)}
                                 loading="lazy"
+                                onError={(e) => {
+                                  const target = e.currentTarget;
+                                  if (target.src !== img.src) {
+                                    target.src = img.src;
+                                  }
+                                }}
                               />
                               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-500 flex items-center justify-center pointer-events-none cursor-zoom-in" onClick={() => setActiveLightboxIndex(idx)}>
                                  <span className="px-5 py-2.5 bg-white/10 backdrop-blur-md text-white text-[11px] font-bold uppercase tracking-wider rounded-full border border-white/25 transform scale-90 group-hover:scale-100 opacity-0 group-hover:opacity-100 transition-all duration-500 shadow-md">
@@ -670,7 +721,7 @@ const App: React.FC = () => {
             </section>
 
             {/* --- PROCESS (Credibility) --- */}
-            <section id="process" className="py-16 md:py-32 bg-forest-900 text-white">
+            <section id="process" className="py-16 md:py-32 bg-forest-900 text-white fade-in-on-scroll">
                <div className="max-w-[1400px] mx-auto px-4 md:px-8">
                   <div className="max-w-2xl mb-16">
                      <span className="text-forest-300 text-xs font-bold uppercase tracking-widest mb-4 block">Der Ablauf</span>
@@ -698,7 +749,7 @@ const App: React.FC = () => {
             </section>
 
             {/* --- TESTIMONIALS --- */}
-            <section className="py-16 md:py-32 bg-white overflow-hidden">
+            <section className="py-16 md:py-32 bg-white overflow-hidden fade-in-on-scroll">
                <div className="max-w-[1400px] mx-auto px-4 md:px-8">
                   <h2 className="text-3xl md:text-5xl font-sans font-bold tracking-tight text-forest-950 mb-16 text-center">
                     Das sagen meine Kunden <br className="hidden md:block" />aus der <span className="font-serif italic font-normal text-forest-700">Nachbarschaft</span>
@@ -734,7 +785,7 @@ const App: React.FC = () => {
             </section>
 
             {/* --- FAQ SECTION (High-End SEO & Trust) --- */}
-            <section className="py-16 md:py-28 bg-forest-50/20 border-t border-b border-forest-100/40">
+            <section className="py-16 md:py-28 bg-forest-50/20 border-t border-b border-forest-100/40 fade-in-on-scroll">
                <div className="max-w-4xl mx-auto px-4 md:px-8">
                   <div className="text-center mb-16">
                      <span className="text-forest-600 text-xs font-bold uppercase tracking-widest mb-3 block">Häufig gestellte Fragen</span>
@@ -752,7 +803,7 @@ const App: React.FC = () => {
             </section>
 
             {/* --- CONTACT / FOOTER --- */}
-            <footer id="contact" className="bg-white pt-16 md:pt-32 pb-32 md:pb-12 border-t border-forest-100">
+            <footer id="contact" className="bg-white pt-16 md:pt-32 pb-32 md:pb-12 border-t border-forest-100 fade-in-on-scroll">
                <div className="max-w-[1400px] mx-auto px-4 md:px-8">
                   <div className="grid lg:grid-cols-2 gap-16 mb-24">
                      <div>
@@ -783,7 +834,7 @@ const App: React.FC = () => {
                                        value={whatsappName}
                                        onChange={(e) => setWhatsappName(e.target.value)}
                                        placeholder="Name..."
-                                       className="w-full bg-white border border-forest-100/60 rounded-xl px-4 py-2.5 text-sm text-forest-950 placeholder-forest-900/30 focus:outline-none focus:border-forest-600 focus:ring-1 focus:ring-forest-600 transition-colors"
+                                       className="w-full bg-forest-100/40 border border-transparent rounded-xl px-4 py-2.5 text-sm text-forest-950 placeholder-forest-900/35 focus:outline-none focus:bg-white focus:border-blue-400 focus:ring-[3px] focus:ring-blue-100/45 transition-all duration-[400ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
                                     />
                                  </div>
                                  <div>
@@ -794,7 +845,7 @@ const App: React.FC = () => {
                                        value={whatsappCity}
                                        onChange={(e) => setWhatsappCity(e.target.value)}
                                        placeholder="Freising..."
-                                       className="w-full bg-white border border-forest-100/60 rounded-xl px-4 py-2.5 text-sm text-forest-950 placeholder-forest-900/30 focus:outline-none focus:border-forest-600 focus:ring-1 focus:ring-forest-600 transition-colors"
+                                       className="w-full bg-forest-100/40 border border-transparent rounded-xl px-4 py-2.5 text-sm text-forest-950 placeholder-forest-900/35 focus:outline-none focus:bg-white focus:border-blue-400 focus:ring-[3px] focus:ring-blue-100/45 transition-all duration-[400ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
                                     />
                                  </div>
                               </div>
@@ -804,7 +855,7 @@ const App: React.FC = () => {
                                     id="whatsappService"
                                     value={whatsappService}
                                     onChange={(e) => setWhatsappService(e.target.value)}
-                                    className="w-full bg-white border border-forest-100/60 rounded-xl px-4 py-2.5 text-sm text-forest-950 focus:outline-none focus:border-forest-600 focus:ring-1 focus:ring-forest-600 transition-colors"
+                                    className="w-full bg-forest-100/40 border border-transparent rounded-xl px-4 py-2.5 text-sm text-forest-950 focus:outline-none focus:bg-white focus:border-blue-400 focus:ring-[3px] focus:ring-blue-100/45 transition-all duration-[400ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
                                  >
                                     {SERVICE_PACKAGES.map(pkg => (
                                        <option key={pkg.name} value={pkg.name}>{pkg.name}</option>
@@ -868,7 +919,7 @@ const App: React.FC = () => {
                                     value={areaSearchQuery}
                                     onChange={(e) => handleAreaSearch(e.target.value)}
                                     placeholder="Ort oder PLZ eingeben..."
-                                    className="w-full bg-white/10 border border-white/20 rounded-xl px-5 py-3 pr-10 text-white placeholder-white/40 focus:outline-none focus:border-forest-400 transition-colors"
+                                    className="w-full bg-black/35 border border-transparent rounded-xl px-5 py-3 pr-10 text-white placeholder-white/40 focus:outline-none focus:bg-black/55 focus:border-white/40 focus:ring-[3px] focus:ring-white/10 transition-all duration-[400ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
                                  />
                                  <MapPin className="absolute right-3.5 top-3.5 w-5 h-5 text-white/40" />
                               </div>
@@ -1005,9 +1056,16 @@ const App: React.FC = () => {
                    animate={{ opacity: 1, scale: 1 }}
                    exit={{ opacity: 0, scale: 0.95 }}
                    transition={{ duration: 0.35, ease: 'easeOut' }}
-                   src={GALLERY_IMAGES[activeLightboxIndex].src}
+                   src={getOptimizedUrl(GALLERY_IMAGES[activeLightboxIndex].src, 1200, 85)}
                    alt={GALLERY_IMAGES[activeLightboxIndex].alt}
                    className="max-h-[75vh] max-w-[90vw] object-contain rounded-xl shadow-2xl border border-white/10"
+                    onError={(e) => {
+                       const target = e.currentTarget;
+                       const original = GALLERY_IMAGES[activeLightboxIndex].src;
+                       if (target.src !== original) {
+                          target.src = original;
+                       }
+                    }}
                 />
              </div>
 
