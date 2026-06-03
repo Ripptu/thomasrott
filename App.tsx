@@ -5,7 +5,7 @@ import {
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { NAV_LINKS, HERO_HEADLINE, HERO_SUBTEXT, SERVICE_PACKAGES, PROCESS_STEPS, LOCATION_CITIES, GALLERY_IMAGES, TESTIMONIALS, FAQ_ITEMS } from './constants.tsx';
 import { Button } from './components/Button.tsx';
-import { InstagramIcon, FacebookIcon, WhatsAppIcon } from './components/SocialIcons.tsx';
+import { InstagramIcon, WhatsAppIcon } from './components/SocialIcons.tsx';
 import { LegalView } from './components/LegalView.tsx';
 import { LEGAL_CONTENT } from './legalContent.ts';
 
@@ -411,8 +411,7 @@ const App: React.FC = () => {
                 transition={{ delay: 0.5, duration: 0.5 }}
                 className="flex gap-8 mt-16 justify-center items-center text-forest-900/60"
               >
-                 <a href="#" aria-label="Thomas Rott auf Instagram" title="Instagram" className="hover:text-forest-900 transition-colors"><InstagramIcon className="w-6 h-6"/></a>
-                 <a href="#" aria-label="Thomas Rott auf Facebook" title="Facebook" className="hover:text-forest-900 transition-colors"><FacebookIcon className="w-6 h-6"/></a>
+                 <a href="https://www.instagram.com/facilitymanagementrott/" target="_blank" rel="noopener noreferrer" aria-label="Thomas Rott auf Instagram" title="Instagram" className="hover:text-forest-900 transition-colors"><InstagramIcon className="w-6 h-6"/></a>
                  <a href="https://wa.me/4917667580812" aria-label="Kontakt über WhatsApp" title="WhatsApp" className="hover:text-forest-900 transition-colors"><WhatsAppIcon className="w-6 h-6"/></a>
                  <a href="tel:017667580812" aria-label="Direkt Anrufen" title="Anrufen" className="hover:text-forest-900 transition-colors"><Phone className="w-6 h-6"/></a>
               </motion.div>
@@ -899,9 +898,8 @@ const App: React.FC = () => {
 
                         {/* Social Icons added here */}
                         <div className="flex gap-4">
-                           <a href="#" className="p-3 bg-forest-50 rounded-full text-forest-900 hover:text-white hover:bg-forest-900 transition-colors"><InstagramIcon className="w-6 h-6"/></a>
-                           <a href="#" className="p-3 bg-forest-50 rounded-full text-forest-900 hover:text-white hover:bg-forest-900 transition-colors"><FacebookIcon className="w-6 h-6"/></a>
-                        </div>
+                            <a href="https://www.instagram.com/facilitymanagementrott/" target="_blank" rel="noopener noreferrer" className="p-3 bg-forest-50 rounded-full text-forest-900 hover:text-white hover:bg-forest-900 transition-colors" aria-label="Instagram-Profil von Thomas Rott"><InstagramIcon className="w-6 h-6"/></a>
+                         </div>
                      </div>
 
                      <div className="bg-forest-950 rounded-[2rem] p-8 md:p-12 text-white flex flex-col justify-between">
